@@ -1,0 +1,118 @@
+{
+  "updated_at": "2026-10-25T20:30:00+08:00",
+  "news_items": [
+    {
+      "id": "NEWS-001",
+      "timestamp": "2026-10-25 18:45",
+      "level": "L1",
+      "level_label": "一级 · 直接持仓",
+      "level_color": "rose",
+      "title": "腾讯控股今日斥资 10.02 亿港元回购 234 万股股份，今年累计回购超 920 亿港元",
+      "source": "港交所公告",
+      "related_symbol": "00700",
+      "related_name": "腾讯控股",
+      "sentiment": "POSITIVE",
+      "why_it_matters": "【直接持仓 · 占组合 10.4%】持续的高强度回购完全对冲南非报业 Naspers/Prosus 的减持压力，年化回购注销率超 3.5%，为你富途+长桥账户共 1,000 股提供强劲的底仓安全垫。",
+      "action_suggestion": "继续持有，投资逻辑与关键跟踪指标（每日10亿回购）完全有效。"
+    },
+    {
+      "id": "NEWS-002",
+      "timestamp": "2026-10-25 16:20",
+      "level": "L1",
+      "level_label": "一级 · 直接持仓",
+      "level_color": "rose",
+      "title": "贵州茅台：散瓶飞天一批价回升至 2280 元，直销渠道供需两旺",
+      "source": "今日酒价 / 财联社",
+      "related_symbol": "600519",
+      "related_name": "贵州茅台",
+      "sentiment": "POSITIVE",
+      "why_it_matters": "【直接持仓 · 占组合 20.4%】打破市场对批价破 2000 元的悲观预期。作为组合第一大单票配置，批价回暖直接打消了你的止损触发条件（1900 元警界线），有效发挥组合减震器功能。",
+      "action_suggestion": "核心防御底仓，维持评级，无需任何卖出操作。"
+    },
+    {
+      "id": "NEWS-003",
+      "timestamp": "2026-10-25 14:15",
+      "level": "L2",
+      "level_label": "二级 · 产业链与同业",
+      "level_color": "amber",
+      "title": "ASML 透露下一代 High-NA EUV 光刻机交付指引符合预期，台积电等顶级代工厂需求无削减",
+      "source": "路透社",
+      "related_symbol": "TSM / NVDA",
+      "related_name": "台积电 / 英伟达",
+      "sentiment": "POSITIVE",
+      "why_it_matters": "【产业链上游 · 间接涉及组合 21.4% 半导体敞口】验证了先进制程（2nm/A16）资本开支周期并未停滞。台积电与英伟达作为芯片设计与晶圆制造的绝对核心，其供给端扩张有据，AI算力逻辑未遭破坏。",
+      "action_suggestion": "昨夜半导体回调更多是宏观流动性与获利盘扰动，非产业基本面恶化，持仓保持定力。"
+    },
+    {
+      "id": "NEWS-004",
+      "timestamp": "2026-10-25 11:30",
+      "level": "L2",
+      "level_label": "二级 · 产业链与同业",
+      "level_color": "amber",
+      "title": "抖音生活服务三季度 GMV 增速放缓，战略重心转向变现率而非盲目低价补贴",
+      "source": "晚点LatePost",
+      "related_symbol": "03690",
+      "related_name": "美团-W",
+      "sentiment": "POSITIVE",
+      "why_it_matters": "【同业竞争格局 · 涉及美团浮盈 25.7%】行业价格战从白热化转向利润导向，美团核心本地商业的经营利润率（OPM）具备进一步超预期空间。此前因竞争引发的估值折价正被系统性修复。",
+      "action_suggestion": "虽触及 180 港元止盈位，但竞争缓和为中线估值提供支撑，可采用'部分止盈（如卖出 1/3），剩余利润奔跑'策略。"
+    },
+    {
+      "id": "NEWS-005",
+      "timestamp": "2026-10-25 09:10",
+      "level": "L3",
+      "level_label": "三级 · 宏观与外汇",
+      "level_color": "cyan",
+      "title": "美国10年期国债收益率升破 4.25%，市场调低美联储12月激进降息预期",
+      "source": "彭博终端",
+      "related_symbol": "QQQ / NVDA / MSFT",
+      "related_name": "美股全市场科技",
+      "sentiment": "NEGATIVE",
+      "why_it_matters": "【宏观折现率 · 影响你 42.6% 美元资产与长久期科技股】高无风险利率会压制高估值成长股的远期折现倍数，这也是昨夜美股拖累组合 -2.6 万元的系统性 Beta 原因。同时，USD/CNY 汇率升至 7.235，小幅抵消了股价跌幅（正向汇兑收益）。",
+      "action_suggestion": "提高现金及短债比例的监控，控制组合整体 Beta，不宜继续激进增加纯美股期权或高杠杆科技暴露。"
+    },
+    {
+      "id": "NEWS-006",
+      "timestamp": "2026-10-25 08:30",
+      "level": "L3",
+      "level_label": "三级 · 宏观与外汇",
+      "level_color": "cyan",
+      "title": "央行表态保持人民币流动性合理充裕，择机进一步降准降息",
+      "source": "中国人民银行网站",
+      "related_symbol": "A股全部持仓",
+      "related_name": "国信证券账户 (茅台 / 宁德)",
+      "sentiment": "POSITIVE",
+      "why_it_matters": "【国内货币政策 · 支撑国信账户 42.2% 资产】充裕的银行间流动性利好核心资产估值修复，国信账户目前持有 12.5 万元现金，若 A 股出现情绪性恐慌回调，将提供充沛的主动加仓弹药。",
+      "action_suggestion": "保持国信账户现金储备，等待茅台或宁德的回调右侧加仓信号。"
+    }
+  ],
+  "upcoming_events": [
+    {
+      "date": "2026-10-29",
+      "market": "美股",
+      "symbol": "MSFT",
+      "name": "微软",
+      "event": "2027财年第一财季 (Q1 FY27) 财报发布",
+      "importance": "CRITICAL",
+      "portfolio_exposure": "8.9%"
+    },
+    {
+      "date": "2026-11-13",
+      "market": "港股",
+      "symbol": "00700",
+      "name": "腾讯控股",
+      "event": "三季度业绩会发布（重点看视频号及云端AI增量）",
+      "importance": "CRITICAL",
+      "portfolio_exposure": "10.4%"
+    },
+    {
+      "date": "2026-11-20",
+      "market": "美股",
+      "symbol": "NVDA",
+      "name": "英伟达",
+      "event": "三季度财报及Blackwell出货交付会",
+      "importance": "CRITICAL",
+      "portfolio_exposure": "13.2%"
+    }
+  ]
+}

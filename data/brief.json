@@ -1,0 +1,134 @@
+{
+  "generated_at": "2026-10-25T07:30:00+08:00",
+  "brief_type": "MORNING_BRIEF",
+  "market_date": "2026-10-25",
+  "risk_assessment": {
+    "level": "中等偏高",
+    "color": "amber",
+    "one_line_summary": "昨夜美股科技股承压，半导体/AI高暴露拖累组合；A股消费防御起效，美团触及止盈警戒线需决断。",
+    "detailed_conclusion": "昨夜美股受 10 年期美债收益率反弹至 4.25% 压制，费城半导体指数收跌 -2.1%，你跨账户合并持有的英伟达（NVDA）与台积电（TSM）合计占净值 21.4%，成为昨夜主要亏损源。港股今日开盘跟随外围承压，但腾讯（00700）继续保持 10 亿级单日回购护盘；长桥账户的美团（03690）累计收益已达 +25.7%，进入第一止盈区间，需重点关注。A股国信账户中茅台（600519）批价企稳且防御属性彰显，预计对冲部分下跌。"
+  },
+  "today_pnl_cny": -26340,
+  "today_pnl_pct": -1.08,
+  "total_nav_cny": 2418500,
+  "cumulative_pnl_cny": 482600,
+  "cumulative_pnl_pct": 24.93,
+  "cash_ratio_pct": 16.2,
+  "top1_holding_name": "英伟达 (跨券商合并)",
+  "top1_holding_pct": 13.2,
+  "attribution": {
+    "total_pct": -1.08,
+    "top_drags": [
+      {
+        "symbol": "NVDA",
+        "name": "英伟达",
+        "impact_pct": -0.48,
+        "amount_cny": -11608,
+        "reason": "费半指数整体回调，科技股短期获利了结"
+      },
+      {
+        "symbol": "03690",
+        "name": "美团-W",
+        "impact_pct": -0.21,
+        "amount_cny": -5080,
+        "reason": "恒科指数下挫，南向短线资金小额净流出"
+      },
+      {
+        "symbol": "TSM",
+        "name": "台积电",
+        "impact_pct": -0.19,
+        "amount_cny": -4595,
+        "reason": "半导体产业链共振调整"
+      },
+      {
+        "symbol": "00700",
+        "name": "腾讯控股",
+        "impact_pct": -0.18,
+        "amount_cny": -4353,
+        "reason": "随港股大盘低开，回购托底跌幅有限"
+      }
+    ],
+    "top_contributors": [
+      {
+        "symbol": "600519",
+        "name": "贵州茅台",
+        "impact_pct": 0.31,
+        "amount_cny": 7499,
+        "reason": "白酒批价企稳回升，资金避险抱团防御"
+      },
+      {
+        "symbol": "300750",
+        "name": "宁德时代",
+        "impact_pct": 0.05,
+        "amount_cny": 1210,
+        "reason": "储能业务欧洲大单催化，先进制造显韧性"
+      }
+    ],
+    "factor_breakdown": [
+      { "factor": "半导体与AI算力", "impact_pct": -0.67, "type": "drag" },
+      { "factor": "中国互联网络", "impact_pct": -0.39, "type": "drag" },
+      { "factor": "市场整体 Beta", "impact_pct": -0.30, "type": "drag" },
+      { "factor": "汇率波动 (USD/HKD vs CNY)", "impact_pct": -0.08, "type": "drag" },
+      { "factor": "先进储能制造", "impact_pct": 0.05, "type": "gain" },
+      { "factor": "白酒高ROE防御", "impact_pct": 0.31, "type": "gain" }
+    ]
+  },
+  "market_timeline": [
+    {
+      "time": "05:00",
+      "market": "美股",
+      "stage": "昨夜收盘",
+      "title": "美股科技回调，费半收跌 -2.1%",
+      "detail": "10年期美债触及4.25%，成长股估值受压，NVDA、TSM走弱，能源金融独强。",
+      "portfolio_action": "已记录对冲损益，持仓科技股基本面未破坏，无需恐慌杀跌。"
+    },
+    {
+      "time": "07:30",
+      "market": "全局",
+      "stage": "每日晨报",
+      "title": "AI晨间分析生成完毕",
+      "detail": "生成今日组合风险评级：中等偏高。提示美团止盈观察与茅台避险效能。",
+      "portfolio_action": "锁定关注列表：美团 (03690)、腾讯 (00700)。"
+    },
+    {
+      "time": "09:30",
+      "market": "A股",
+      "stage": "A股开盘",
+      "title": "茅台高开 +0.8%，宁德低开震荡",
+      "detail": "央行公开市场开展 2000 亿逆回购，资金面宽松，红利与核心资产获资金回流。",
+      "portfolio_action": "国信账户表现坚挺，稳住组合底盘。"
+    },
+    {
+      "time": "10:00",
+      "market": "港股",
+      "stage": "香港开盘",
+      "title": "恒生指数跌 0.7%，腾讯坚守 425 港元",
+      "detail": "南向资金早盘净买入超 20 亿港元，主要承接腾讯与阿里等蓝筹。",
+      "portfolio_action": "长桥美团一度触及 181 港元，止盈观察窗口开启。"
+    },
+    {
+      "time": "12:00",
+      "market": "A/H",
+      "stage": "午盘小结",
+      "title": "A股防御风格明显，组合上午收窄亏损",
+      "detail": "上午累计亏损从 -3.2 万收窄至 -2.6 万，A股茅台涨幅扩大至 +1.48%。",
+      "portfolio_action": "港股午后观察南向资金流向。"
+    },
+    {
+      "time": "16:00",
+      "market": "港股",
+      "stage": "港股收盘",
+      "title": "腾讯收跌 -1.24%，美团冲高回落 -2.19%",
+      "detail": "港股科技股跟随隔夜美股走势调整，大盘成交维持活跃。",
+      "portfolio_action": "美团未跌破 175 趋势线，暂继续持有底仓并观察夜盘。"
+    },
+    {
+      "time": "21:30",
+      "market": "美股",
+      "stage": "美股夜盘",
+      "title": "美股盘前：英伟达小幅反弹 +0.6%",
+      "detail": "大型科技股盘前情绪回稳，市场等待明晚微软/Alphabet等大型科技财报预告。",
+      "portfolio_action": "监控富途/老虎账户保证金率与期权波动。"
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "updated_at": "2026-10-25T20:00:00+08:00",
+  "behavioral_diagnostics": {
+    "total_trades_analyzed": 28,
+    "win_rate_pct": 64.3,
+    "profit_loss_ratio": 2.45,
+    "avg_holding_days": 68,
+    "core_biases": [
+      {
+        "market": "港股市场",
+        "bias_name": "处置效应 · 过早止盈 (Premature Profit-Taking)",
+        "severity": "HIGH",
+        "description": "你在港股科技股（腾讯、美团、快手）上的选股胜率高达 80%，但平均盈利平仓持仓仅 14 天。历史统计显示，你在盈利 15%-25% 卖出后，标的在后续 60 天内平均仍有 +18.4% 的超额涨幅。",
+        "prescription": "对港股核心资产采用'移动止盈线 (Trailing Stop)'而非固定点位止盈，至少保留 30% 底仓享受主升浪。"
+      },
+      {
+        "market": "美股市场",
+        "bias_name": "事件催化追涨 · 财报前 FOMO 偏差",
+        "severity": "MEDIUM",
+        "description": "过去 12 个月内有 3 次在美股科技股公布财报前 3 个交易日内追涨开仓，胜率仅 33%，平均回撤 -9.2%，主因期权隐含波动率 (IV Crush) 挤压与预期充分计价。",
+        "prescription": "建立纪律：持仓财报发布前 5 个交易日内严格禁止新开仓，仅允许持有原底仓或做 Collar 对冲。"
+      },
+      {
+        "market": "A股市场",
+        "bias_name": "稳健价值归航 (Positive Edge)",
+        "severity": "POSITIVE",
+        "description": "A股以茅台、宁德等行业龙头和特批分红资产为主，平均持仓超 180 天，回撤控制良好，夏普比率（Sharpe）达 1.82，有效充当了整个三地组合的减震压舱石。",
+        "prescription": "继续保持A股低换手、重分红、重现金流的长期主义配置风格。"
+      }
+    ]
+  },
+  "trade_records": [
+    {
+      "id": "TRD-2026-001",
+      "date": "2026-04-20",
+      "status": "OPEN",
+      "action": "BUY",
+      "symbol": "03690",
+      "name": "美团-W",
+      "market": "港股",
+      "broker": "长桥证券",
+      "price": 142.0,
+      "shares": 1200,
+      "currency": "HKD",
+      "rationale": "抖音本地生活低价补贴趋缓，到店业务 OPM 迎来拐点，估值回落至近两年低位，风险收益比极佳。",
+      "holding_horizon": "6 - 12 个月",
+      "add_condition": "若回撤至 130 港元且核心外卖单量维持 10% 增长，则在长桥加仓 400 股。",
+      "stop_condition": "抖音重启百亿补贴价格战，或到店 GTV 份额跌破 60%。",
+      "current_status_note": "目前收益 +25.7%，进入第一止盈考察期（180 港元）。"
+    },
+    {
+      "id": "TRD-2026-002",
+      "date": "2026-03-28",
+      "status": "OPEN",
+      "action": "BUY",
+      "symbol": "300750",
+      "name": "宁德时代",
+      "market": "A股",
+      "broker": "国信证券",
+      "price": 215.0,
+      "shares": 1200,
+      "currency": "CNY",
+      "rationale": "全球动力与储能双轮驱动，欧洲技术授权开花结果，单位盈利强韧。",
+      "holding_horizon": "1 - 2 年",
+      "add_condition": "储能出海订单突破 50GWh 且股价回踩年线。",
+      "stop_condition": "海外对技术授权模式进行全面制裁封杀。",
+      "current_status_note": "当前股价 258.4 元，浮盈 +20.2%，基本面与逻辑非常坚挺。"
+    },
+    {
+      "id": "TRD-2026-003",
+      "date": "2026-03-15",
+      "status": "OPEN",
+      "action": "BUY",
+      "symbol": "NVDA",
+      "name": "英伟达",
+      "market": "美股",
+      "broker": "富途证券",
+      "price": 118.5,
+      "shares": 60,
+      "currency": "USD",
+      "rationale": "Blackwell 产能上量，AI 算力基础设施进入第二轮高密度集群建设。",
+      "holding_horizon": "12 个月以上",
+      "add_condition": "若回调至 120 美元整数关口且 CSP 资本开支无下调，继续补齐至 100 股。",
+      "stop_condition": "云巨头连续两季度削减 AI Capex 或自研 ASIC 取得实质性大范围替代。",
+      "current_status_note": "富途持仓浮盈 +16.7%，昨夜回调属宏观波动，继续守纪律持有。"
+    },
+    {
+      "id": "TRD-2026-004",
+      "date": "2026-02-18",
+      "status": "CLOSED",
+      "action": "SELL",
+      "symbol": "AAPL",
+      "name": "苹果公司",
+      "market": "美股",
+      "broker": "老虎证券",
+      "price": 232.0,
+      "shares": 80,
+      "currency": "USD",
+      "buy_price": 182.0,
+      "buy_date": "2025-08-10",
+      "pnl_pct": 27.47,
+      "pnl_cny": 28940,
+      "post_mortem": {
+        "verdict": "SUCCESS",
+        "attribution": {
+          "beta_contribution_pct": 45.0,
+          "alpha_contribution_pct": 35.0,
+          "luck_contribution_pct": 20.0
+        },
+        "what_went_right": "坚定在 Apple Intelligence 发布前低位布局，耐心持有 6 个月享受了换机潮情绪催化。",
+        "what_went_wrong": "止盈时点把握较好，但在清仓后未将资金及时轮动至性价比更高的标的，在现金池沉淀了将近 1 个月。",
+        "core_lesson": "个股止盈后应预设好资金梯队去向，避免因资金闲置产生机会成本。"
+      }
+    },
+    {
+      "id": "TRD-2026-005",
+      "date": "2026-01-15",
+      "status": "CLOSED",
+      "action": "SELL",
+      "symbol": "BABA",
+      "name": "阿里巴巴",
+      "market": "美股",
+      "broker": "富途证券",
+      "price": 76.5,
+      "shares": 200,
+      "currency": "USD",
+      "buy_price": 86.0,
+      "buy_date": "2025-11-20",
+      "pnl_pct": -11.05,
+      "pnl_cny": -13750,
+      "post_mortem": {
+        "verdict": "FAILURE_DISCIPLINED",
+        "attribution": {
+          "beta_contribution_pct": -60.0,
+          "alpha_contribution_pct": -30.0,
+          "luck_contribution_pct": -10.0
+        },
+        "what_went_right": "严格执行了预设的 -10% 止损纪律，没有陷入'越跌越补、最终深套'的心理陷阱。",
+        "what_went_wrong": "买入时严重低估了淘天国内主电商 GMV 份额被拼多多与抖音持续蚕食的烈度，过于轻信低 PE 的价值陷阱。",
+        "core_lesson": "低估值不能作为唯一的买入理由；若核心业务份额持续流失，估值中枢会永久下移。"
+      }
+    }
+  ]
+}

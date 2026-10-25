@@ -1,0 +1,116 @@
+{
+  "updated_at": "2026-10-25T21:00:00+08:00",
+  "metrics": {
+    "hhi_concentration_index": 1280,
+    "top5_concentration_pct": 59.8,
+    "cash_reserve_pct": 16.2,
+    "max_drawdown_1y_pct": -11.4,
+    "annualized_volatility_pct": 17.8,
+    "portfolio_sharpe": 1.58,
+    "beta_sp500": 0.94,
+    "beta_hsi": 0.82,
+    "beta_csi300": 0.65
+  },
+  "market_breakdown": [
+    { "market": "美股 (US)", "amount_cny": 894800, "pct": 37.0, "color": "#38bdf8" },
+    { "market": "A股 (CN)", "amount_cny": 845200, "pct": 35.0, "color": "#f43f5e" },
+    { "market": "港股 (HK)", "amount_cny": 678500, "pct": 28.0, "color": "#10b981" }
+  ],
+  "broker_breakdown": [
+    { "broker": "国信证券 (A股全仓)", "amount_cny": 845200, "pct": 35.0, "color": "#ef4444" },
+    { "broker": "富途证券 (美/港)", "amount_cny": 745000, "pct": 30.8, "color": "#0ea5e9" },
+    { "broker": "老虎证券 (美股核心)", "amount_cny": 472800, "pct": 19.5, "color": "#f59e0b" },
+    { "broker": "长桥证券 (港股精选)", "amount_cny": 355500, "pct": 14.7, "color": "#8b5cf6" }
+  ],
+  "currency_breakdown": [
+    { "currency": "USD (美元)", "amount_cny": 894800, "pct": 37.0, "color": "#0284c7" },
+    { "currency": "CNY (人民币)", "amount_cny": 845200, "pct": 35.0, "color": "#dc2626" },
+    { "currency": "HKD (港币)", "amount_cny": 678500, "pct": 28.0, "color": "#059669" }
+  ],
+  "sector_breakdown": [
+    { "sector": "半导体与计算硬件", "amount_cny": 517500, "pct": 21.4, "warning": true },
+    { "sector": "白酒与必选消费", "amount_cny": 492750, "pct": 20.4, "warning": false },
+    { "sector": "现金与高流动性理财", "amount_cny": 391704, "pct": 16.2, "warning": false },
+    { "sector": "中国互联网", "amount_cny": 454500, "pct": 18.8, "warning": false },
+    { "sector": "新能源先进制造", "amount_cny": 310080, "pct": 12.8, "warning": false },
+    { "sector": "企业软件与云计算", "amount_cny": 156000, "pct": 6.5, "warning": false },
+    { "sector": "大盘指数ETF配置", "amount_cny": 95966, "pct": 3.9, "warning": false }
+  ],
+  "top_holdings_merged": [
+    {
+      "symbol": "600519",
+      "name": "贵州茅台",
+      "market": "A股",
+      "brokers": ["国信证券"],
+      "amount_cny": 492750,
+      "pct": 20.37,
+      "risk_status": "NORMAL"
+    },
+    {
+      "symbol": "NVDA",
+      "name": "英伟达",
+      "market": "美股",
+      "brokers": ["富途证券", "老虎证券"],
+      "amount_cny": 319200,
+      "pct": 13.20,
+      "risk_status": "WARNING_HIGH_BETA"
+    },
+    {
+      "symbol": "300750",
+      "name": "宁德时代",
+      "market": "A股",
+      "brokers": ["国信证券"],
+      "amount_cny": 310080,
+      "pct": 12.82,
+      "risk_status": "NORMAL"
+    },
+    {
+      "symbol": "00700",
+      "name": "腾讯控股",
+      "market": "港股",
+      "brokers": ["富途证券", "长桥证券"],
+      "amount_cny": 396884,
+      "pct": 16.41,
+      "risk_status": "NORMAL"
+    },
+    {
+      "symbol": "03690",
+      "name": "美团-W",
+      "market": "港股",
+      "brokers": ["长桥证券"],
+      "amount_cny": 198360,
+      "pct": 8.20,
+      "risk_status": "TAKE_PROFIT"
+    }
+  ],
+  "stress_tests": [
+    {
+      "scenario": "纳斯达克 100 指数单日暴跌 -5.0%",
+      "portfolio_impact_pct": -2.35,
+      "portfolio_impact_cny": -56834,
+      "vulnerability": "NVDA 与 TSM 跌幅预估达 -7.2% ~ -8.5%，科技因子共振；美元往往避险升值，对冲部分汇兑损失。",
+      "hedging_suggestion": "若纳指出现破位，可利用老虎证券账上现金买入少量 SQQQ 或 SPY Put 保护高 Beta 半导体仓位。"
+    },
+    {
+      "scenario": "恒生科技指数大跌 -5.0%",
+      "portfolio_impact_pct": -1.45,
+      "portfolio_impact_cny": -35068,
+      "vulnerability": "主要拖累美团 (-6.2%) 和腾讯 (-3.8%)。但腾讯单日 10 亿回购将限制其实际跌幅。",
+      "hedging_suggestion": "重点观察美团 170 港元支撑位，若破位则必须执行止盈避险。"
+    },
+    {
+      "scenario": "沪深 300 指数大跌 -3.0%",
+      "portfolio_impact_pct": -1.18,
+      "portfolio_impact_cny": -28538,
+      "vulnerability": "茅台具有极高防守韧性（Beta 约 0.65），宁德受成长风格压制跌幅约 -4.0%。",
+      "hedging_suggestion": "国信账户拥有 12.5 万元闲置现金，A股下挫即是加仓高股息蓝筹的机会。"
+    },
+    {
+      "scenario": "美元/人民币汇率快速升值 2.0% (USD/CNY 从 7.23 -> 7.38)",
+      "portfolio_impact_pct": 0.74,
+      "portfolio_impact_cny": 17896,
+      "vulnerability": "你持有 37.0% 美元资产与 28.0% 港币资产（港币挂钩美元），美元升值将为你带来直接的人民币计价汇兑浮盈。",
+      "hedging_suggestion": "三地资产自然分散了单一主权货币贬值风险，无需额外做汇率掉期锁汇。"
+    }
+  ]
+}
