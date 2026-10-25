@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-10-25T21:00:00+08:00",
+  "updated_at": "2026-10-25T21:45:00+08:00",
   "base_currency": "CNY",
   "fx_rates": {
-    "USD_CNY": 7.235,
-    "HKD_CNY": 0.926,
+    "USD_CNY": 6.6702,
+    "HKD_CNY": 0.8582,
     "CNY_CNY": 1.0
   },
   "cash_accounts": [
@@ -11,19 +11,19 @@
       "broker": "富途证券",
       "currency": "USD",
       "amount": 16400,
-      "amount_cny": 118654
+      "amount_cny": 109391
     },
     {
       "broker": "老虎证券",
       "currency": "USD",
       "amount": 9200,
-      "amount_cny": 66562
+      "amount_cny": 61366
     },
     {
       "broker": "长桥证券",
       "currency": "HKD",
       "amount": 88000,
-      "amount_cny": 81488
+      "amount_cny": 75522
     },
     {
       "broker": "国信证券",
@@ -40,15 +40,19 @@
       "market": "美股",
       "broker": "富途证券",
       "shares": 60,
-      "cost_price": 118.5,
-      "current_price": 138.25,
+      "cost_price": 182.5,
+      "current_price": 210.96,
       "currency": "USD",
-      "day_change_pct": -2.45,
+      "day_change_pct": -0.59,
       "sector": "半导体与计算硬件",
-      "factors": ["AI核心", "高Beta", "大盘科技"],
+      "factors": [
+        "AI核心",
+        "高Beta",
+        "大盘科技"
+      ],
       "thesis": {
         "buy_date": "2026-03-15",
-        "buy_reason": "Blackwell 架构产能释放，云巨头资本开支上修，算力集群需求仍供不应求。",
+        "buy_reason": "Blackwell 架构产能释放，云巨头资本开支上修，算力集群需求供不应求。",
         "key_metrics": [
           "Data Center 季度营收增速 > 15%",
           "毛利率维持在 73% 以上",
@@ -57,12 +61,12 @@
         "invalidation_criteria": [
           "微软/谷歌/Meta 连续两季度缩减 AI capex",
           "自研 ASIC 芯片大规模替代通用 GPU",
-          "跌破 110 美元长期趋势支撑"
+          "跌破 180 美元长期趋势支撑"
         ],
         "status": "HOLD",
         "ai_check": {
           "status": "WARNING",
-          "message": "昨夜受美债收益率反弹及科技股获利回吐影响回调 -2.45%，基本面暂无利空，但半导体整体敞口偏高（21.4%），接近预警线。"
+          "message": "受美债收益率反弹及科技股获利回吐影响微调 -0.59%，基本面暂无利空，但半导体整体敞口偏高（21.4%），接近预警线。"
         }
       }
     },
@@ -73,17 +77,27 @@
       "market": "美股",
       "broker": "老虎证券",
       "shares": 30,
-      "cost_price": 124.0,
-      "current_price": 138.25,
+      "cost_price": 188.0,
+      "current_price": 210.96,
       "currency": "USD",
-      "day_change_pct": -2.45,
+      "day_change_pct": -0.59,
       "sector": "半导体与计算硬件",
-      "factors": ["AI核心", "高Beta", "大盘科技"],
+      "factors": [
+        "AI核心",
+        "高Beta",
+        "大盘科技"
+      ],
       "thesis": {
         "buy_date": "2026-05-20",
         "buy_reason": "回调加仓，长期看好算力基础设施统治力。",
-        "key_metrics": ["Data Center 营收", "下游 CSP 资本开支"],
-        "invalidation_criteria": ["云厂商砍单", "地缘管制超预期恶化"],
+        "key_metrics": [
+          "Data Center 营收",
+          "下游 CSP 资本开支"
+        ],
+        "invalidation_criteria": [
+          "云厂商砍单",
+          "地缘管制超预期恶化"
+        ],
         "status": "HOLD",
         "ai_check": {
           "status": "WARNING",
@@ -98,12 +112,16 @@
       "market": "港股",
       "broker": "富途证券",
       "shares": 700,
-      "cost_price": 372.0,
-      "current_price": 428.6,
+      "cost_price": 352.0,
+      "current_price": 386.0,
       "currency": "HKD",
-      "day_change_pct": -1.24,
+      "day_change_pct": 0.94,
       "sector": "互联网与数字娱乐",
-      "factors": ["股东回报", "AI应用", "核心蓝筹"],
+      "factors": [
+        "股东回报",
+        "AI应用",
+        "核心蓝筹"
+      ],
       "thesis": {
         "buy_date": "2026-01-10",
         "buy_reason": "千亿回购护盘，视频号商业化与游戏出海强劲，估值位于历史中枢偏下。",
@@ -120,7 +138,7 @@
         "status": "HOLD",
         "ai_check": {
           "status": "NORMAL",
-          "message": "今日盘中回购 10.02 亿港元继续执行，南向资金净流入 3.4 亿港元，短线跟随恒生科技指数微调。"
+          "message": "今日盘中回购 10.02 亿港元继续执行，南向资金净流入 3.4 亿港元，走势坚挺。"
         }
       }
     },
@@ -131,21 +149,30 @@
       "market": "港股",
       "broker": "长桥证券",
       "shares": 300,
-      "cost_price": 385.0,
-      "current_price": 428.6,
+      "cost_price": 360.0,
+      "current_price": 386.0,
       "currency": "HKD",
-      "day_change_pct": -1.24,
+      "day_change_pct": 0.94,
       "sector": "互联网与数字娱乐",
-      "factors": ["股东回报", "AI应用", "核心蓝筹"],
+      "factors": [
+        "股东回报",
+        "AI应用",
+        "核心蓝筹"
+      ],
       "thesis": {
         "buy_date": "2026-04-02",
-        "buy_reason": "长桥账户打新及港股配置备用仓位，加仓腾讯做长期压舱石。",
-        "key_metrics": ["回购规模", "游戏大盘数据"],
-        "invalidation_criteria": ["大股东南非报业抛售节奏骤增"],
+        "buy_reason": "长桥账户配置核心底仓，加仓腾讯做长期压舱石。",
+        "key_metrics": [
+          "回购规模",
+          "游戏大盘数据"
+        ],
+        "invalidation_criteria": [
+          "大股东南非报业抛售节奏骤增"
+        ],
         "status": "HOLD",
         "ai_check": {
           "status": "NORMAL",
-          "message": "合并两账户共持有 1,000 股，总市值 42.86 万港元（约 39.7 万人民币），占总仓位 10.4%。"
+          "message": "合并两账户共持有 1,000 股，总市值 38.6 万港元（约 33.1 万人民币），占总仓位 13.3%。"
         }
       }
     },
@@ -155,16 +182,20 @@
       "name": "贵州茅台",
       "market": "A股",
       "broker": "国信证券",
-      "shares": 300,
-      "cost_price": 1580.0,
-      "current_price": 1642.5,
+      "shares": 400,
+      "cost_price": 1280.0,
+      "current_price": 1335.0,
       "currency": "CNY",
-      "day_change_pct": 1.48,
+      "day_change_pct": 1.25,
       "sector": "主要消费与白酒",
-      "factors": ["高ROE", "充沛自由现金流", "防御资产"],
+      "factors": [
+        "高ROE",
+        "充沛自由现金流",
+        "防御资产"
+      ],
       "thesis": {
         "buy_date": "2026-02-18",
-        "buy_reason": "股息率提升至 3.8%，特批分红政策确立，批发价企稳在 2200 元上方，极佳防御性。",
+        "buy_reason": "特批分红政策确立，批发价企稳在 2200 元上方，极佳防御性。",
         "key_metrics": [
           "飞天散瓶批发价稳定在 2100 元红线以上",
           "年化现金分红比例承诺 >= 75%"
@@ -176,7 +207,7 @@
         "status": "HOLD",
         "ai_check": {
           "status": "POSITIVE",
-          "message": "今日A股消费板块逆势走强，茅台贡献 +1.48%，有效对冲美港股科技股下挫，成为今日最大正贡献源。"
+          "message": "今日A股消费板块逆势走强，茅台收涨 +1.25%（1335元），贡献稳健正收益。"
         }
       }
     },
@@ -187,16 +218,23 @@
       "market": "A股",
       "broker": "国信证券",
       "shares": 1200,
-      "cost_price": 215.0,
-      "current_price": 258.4,
+      "cost_price": 195.0,
+      "current_price": 237.6,
       "currency": "CNY",
-      "day_change_pct": 0.35,
+      "day_change_pct": 7.8,
       "sector": "新能源与储能",
-      "factors": ["全球出海", "先进制造", "高景气度"],
+      "factors": [
+        "全球出海",
+        "先进制造",
+        "高景气度"
+      ],
       "thesis": {
         "buy_date": "2026-03-28",
         "buy_reason": "全球动力电池份额重回 37% 以上，欧洲建厂与技术授权模式放量，储能业务增速超 35%。",
-        "key_metrics": ["全球市占率", "单位瓦时净利润稳定在 0.08 元以上"],
+        "key_metrics": [
+          "全球市占率",
+          "单位瓦时净利润稳定在 0.08 元以上"
+        ],
         "invalidation_criteria": [
           "欧美出台惩罚性禁令阻断技术授权",
           "固态电池技术出现颠覆性商用突破且宁德落后"
@@ -204,7 +242,7 @@
         "status": "HOLD",
         "ai_check": {
           "status": "NORMAL",
-          "message": "当前价格已达 258.4 元，接近预设第一目标位 265 元，建议关注是否分批减仓锁定利润。"
+          "message": "今日大涨 +7.8%（237.6元），浮盈突破 +21.8%，接近第一目标位 245 元。"
         }
       }
     },
@@ -214,25 +252,32 @@
       "name": "台积电",
       "market": "美股",
       "broker": "老虎证券",
-      "shares": 150,
-      "cost_price": 162.0,
-      "current_price": 192.4,
+      "shares": 120,
+      "cost_price": 365.0,
+      "current_price": 418.51,
       "currency": "USD",
-      "day_change_pct": -1.82,
+      "day_change_pct": 1.49,
       "sector": "半导体与计算硬件",
-      "factors": ["AI核心", "先进制程垄断", "高成长"],
+      "factors": [
+        "AI核心",
+        "先进制程垄断",
+        "高成长"
+      ],
       "thesis": {
         "buy_date": "2026-04-12",
         "buy_reason": "3nm 与 2nm 产能全线满产，苹果与英伟达锁定未来两年产能，AI 半导体卖铲人。",
-        "key_metrics": ["CoWoS 先进封装产能扩产速度", "先进制程毛利率 > 54%"],
+        "key_metrics": [
+          "CoWoS 先进封装产能扩产速度",
+          "先进制程毛利率 > 54%"
+        ],
         "invalidation_criteria": [
           "地缘政治冲突实质升级",
           "先进制程良品率重大事故"
         ],
         "status": "HOLD",
         "ai_check": {
-          "status": "WARNING",
-          "message": "随费城半导体指数调整 -1.82%，与 NVDA 呈现强关联度，半导体板块共振回调。"
+          "status": "NORMAL",
+          "message": "逆势上涨 +1.49%（418.51美元），ASML交付如期验证先进制程需求韧性。"
         }
       }
     },
@@ -243,17 +288,27 @@
       "market": "美股",
       "broker": "富途证券",
       "shares": 50,
-      "cost_price": 405.0,
-      "current_price": 432.8,
+      "cost_price": 485.0,
+      "current_price": 524.51,
       "currency": "USD",
-      "day_change_pct": -0.85,
+      "day_change_pct": 0.66,
       "sector": "云计算与企业软件",
-      "factors": ["AI商业化", "高护城河", "稳健现金流"],
+      "factors": [
+        "AI商业化",
+        "高护城河",
+        "稳健现金流"
+      ],
       "thesis": {
         "buy_date": "2026-02-05",
         "buy_reason": "Azure 增长重新提速，Copilot 企业席位渗透率稳步提升，企业级 AI 护城河无可撼动。",
-        "key_metrics": ["Azure 营收增速 > 28%", "商业云毛利率"],
-        "invalidation_criteria": ["Azure 增速连续破 25% 且未见企稳", "Copilot 续约率低于 70%"],
+        "key_metrics": [
+          "Azure 营收增速 > 28%",
+          "商业云毛利率"
+        ],
+        "invalidation_criteria": [
+          "Azure 增速连续破 25% 且未见企稳",
+          "Copilot 续约率低于 70%"
+        ],
         "status": "HOLD",
         "ai_check": {
           "status": "NORMAL",
@@ -267,22 +322,32 @@
       "name": "美团-W",
       "market": "港股",
       "broker": "长桥证券",
-      "shares": 1200,
-      "cost_price": 142.0,
-      "current_price": 178.5,
+      "shares": 2500,
+      "cost_price": 58.5,
+      "current_price": 71.65,
       "currency": "HKD",
-      "day_change_pct": -2.19,
+      "day_change_pct": 0.49,
       "sector": "本地生活与消费互联网",
-      "factors": ["到店壁垒", "海外Keeta扩张", "低估值"],
+      "factors": [
+        "到店壁垒",
+        "海外Keeta扩张",
+        "低估值"
+      ],
       "thesis": {
         "buy_date": "2026-04-20",
         "buy_reason": "抖音本地生活竞争格局趋缓，到店业务利润率修复，中东外卖 Keeta 进展顺利。",
-        "key_metrics": ["核心本地商业经营利润率", "海外单量增速"],
-        "invalidation_criteria": ["抖音重新发起大规模价格补贴战", "海外业务亏损超预期失控"],
+        "key_metrics": [
+          "核心本地商业经营利润率",
+          "海外单量增速"
+        ],
+        "invalidation_criteria": [
+          "抖音重新发起大规模价格补贴战",
+          "海外业务亏损超预期失控"
+        ],
         "status": "TAKE_PROFIT_WATCH",
         "ai_check": {
           "status": "CRITICAL",
-          "message": "当前收益率达 +25.7%，触及第一止盈警界线（180 港元），今日南向净流出 1.2 亿港元，建议今日收盘前评估落袋 30% 仓位。"
+          "message": "当前收益率达 +22.5%，触及第一止盈警界线（72 港元），建议逢高评估落袋 30% 仓位。"
         }
       }
     },
@@ -292,22 +357,31 @@
       "name": "纳指100 ETF",
       "market": "美股",
       "broker": "老虎证券",
-      "shares": 70,
-      "cost_price": 460.0,
-      "current_price": 492.3,
+      "shares": 60,
+      "cost_price": 665.0,
+      "current_price": 704.4,
       "currency": "USD",
-      "day_change_pct": -1.15,
+      "day_change_pct": -0.01,
       "sector": "跨行业大盘指数",
-      "factors": ["Beta配置", "流动性充沛", "美股科技底仓"],
+      "factors": [
+        "Beta配置",
+        "流动性充沛",
+        "美股科技底仓"
+      ],
       "thesis": {
         "buy_date": "2026-01-22",
         "buy_reason": "作为美股科技核心 Beta 工具，平衡个股选股 Alpha 波动。",
-        "key_metrics": ["美联储利率路径", "纳斯达克盈利修正"],
-        "invalidation_criteria": ["美股发生系统性流动性危机"],
+        "key_metrics": [
+          "美联储利率路径",
+          "纳斯达克盈利修正"
+        ],
+        "invalidation_criteria": [
+          "美股发生系统性流动性危机"
+        ],
         "status": "HOLD",
         "ai_check": {
           "status": "NORMAL",
-          "message": "科技股回调导致净值跟随波动，作为配置型仓位无需调仓。"
+          "message": "科技股底仓稳定，无需调仓。"
         }
       }
     }

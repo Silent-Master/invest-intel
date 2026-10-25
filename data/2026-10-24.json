@@ -1,0 +1,84 @@
+{
+  "meta": {
+    "date": "2026-10-24",
+    "version": "v2.1",
+    "market_status": "CLOSED",
+    "note": "周六复盘档案 · 科技股普跌与半导体回调复盘"
+  },
+  "indices": [
+    { "name": "纳斯达克", "symbol": ".IXIC", "market": "美股", "price": 26008.86, "chg_amt": -312.4, "chg_pct": -1.18, "is_real": true },
+    { "name": "沪深300", "symbol": "000300", "market": "A股", "price": 4036.30, "chg_amt": -18.2, "chg_pct": -0.45, "is_real": true },
+    { "name": "恒生指数", "symbol": "HSI", "market": "港股", "price": 22934.68, "chg_amt": -142.5, "chg_pct": -0.62, "is_real": true },
+    { "name": "美元/人民币", "symbol": "USDCNY", "market": "外汇", "price": 6.6745, "chg_amt": 0.002, "chg_pct": 0.03, "is_real": true }
+  ],
+  "brief": {
+    "risk_level": "高",
+    "risk_color": "rose",
+    "headline": "10-24 全球科技成长股普跌，美债收益率冲高压制市场，组合当日回撤 -1.08%。",
+    "narrative": "10-24美股费半大跌-2.1%，英伟达、台积电、微软同步调整；国信证券茅台表现稳定，发挥了关键避险功能。",
+    "total_nav_cny": 2476031,
+    "today_pnl_cny": -26340,
+    "today_pnl_pct": -1.08,
+    "cumulative_pnl_cny": 480150,
+    "cumulative_pnl_pct": 24.24,
+    "cash_ratio_pct": 15.8
+  },
+  "holdings_checklist": [
+    {
+      "symbol": "600519", "name": "贵州茅台", "market": "A股", "broker": "国信证券",
+      "real_price": 1318.49, "chg_pct": 0.45, "status": "NORMAL", "status_label": "正常 · 逆势防守",
+      "status_color": "emerald", "inspection_note": "A股走弱时白酒展现极强避险属性，批价未出现扰动。", "action_focus": "持股待涨"
+    },
+    {
+      "symbol": "300750", "name": "宁德时代", "market": "A股", "broker": "国信证券",
+      "real_price": 220.41, "chg_pct": -1.20, "status": "NORMAL", "status_label": "正常 · 震荡筑底",
+      "status_color": "emerald", "inspection_note": "随创业板指微调，基本面海外储能订单平稳。", "action_focus": "观察均线支撑"
+    },
+    {
+      "symbol": "00700", "name": "腾讯控股", "market": "港股", "broker": "富途证券 + 长桥证券",
+      "real_price": 382.40, "chg_pct": -0.80, "status": "NORMAL", "status_label": "正常 · 回购支撑",
+      "status_color": "emerald", "inspection_note": "港股大盘走弱，腾讯继续10亿回购托底。", "action_focus": "长期底仓"
+    },
+    {
+      "symbol": "03690", "name": "美团-W", "market": "港股", "broker": "长桥证券",
+      "real_price": 71.30, "chg_pct": -1.50, "status": "WARNING", "status_label": "关注 · 冲高震荡",
+      "status_color": "amber", "inspection_note": "触及上方强阻力位，多空争夺加剧。", "action_focus": "密切监控止盈信号"
+    },
+    {
+      "symbol": "NVDA", "name": "英伟达", "market": "美股", "broker": "富途证券 + 老虎证券",
+      "real_price": 212.21, "chg_pct": -2.45, "status": "WARNING", "status_label": "预警 · 费半共振大跌",
+      "status_color": "amber", "inspection_note": "隔夜芯片股普遍遭获利了结，英伟达回调-2.45%。", "action_focus": "控制仓位不加杠杆"
+    },
+    {
+      "symbol": "TSM", "name": "台积电", "market": "美股", "broker": "老虎证券",
+      "real_price": 412.35, "chg_pct": -1.82, "status": "WARNING", "status_label": "关注 · 跟随半导体调整",
+      "status_color": "amber", "inspection_note": "随费半回调，基本面供需仍紧平衡。", "action_focus": "持有观望"
+    },
+    {
+      "symbol": "MSFT", "name": "微软", "market": "美股", "broker": "富途证券",
+      "real_price": 521.08, "chg_pct": -0.85, "status": "NORMAL", "status_label": "正常 · 财报静默期",
+      "status_color": "emerald", "inspection_note": "股价维持横盘整理，等待下周财报。", "action_focus": "守纪律观望"
+    },
+    {
+      "symbol": "QQQ", "name": "纳指100 ETF", "market": "美股", "broker": "老虎证券",
+      "real_price": 704.47, "chg_pct": -1.15, "status": "NORMAL", "status_label": "正常 · 随大盘波动",
+      "status_color": "emerald", "inspection_note": "科技成长风格受挫，净值随之波动。", "action_focus": "底仓持有"
+    }
+  ],
+  "transmission_chains": [
+    {
+      "id": "CHAIN-01",
+      "title": "美债利率飙升 ➔ 科技估值承压 ➔ 半导体集体回调",
+      "category": "宏观冲击",
+      "urgency": "高",
+      "trigger": "美债收益率单日上行 8bp",
+      "chain_steps": [
+        "通胀担忧推高长端美债收益率",
+        "纳斯达克与费城半导体领跌全市场",
+        "英伟达与台积电单日回撤超过 2%",
+        "【直接作用】造成组合单日 2.6 万元净值波动"
+      ],
+      "portfolio_impact": "系统性贝塔回撤，持仓个股阿尔法基本面无破坏。"
+    }
+  ]
+}

@@ -20,15 +20,14 @@
               600: '#0369a1',
               900: '#0c4a6e',
             },
-            gain: '#10b981', // 绿色代表上涨（国际/科技通用，也可按国内红绿配置）
-            loss: '#f43f5e', // 红色代表下跌
+            gain: '#10b981',
+            loss: '#f43f5e',
           }
         }
       }
     }
   </script>
   <style>
-    /* Custom scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #0f172a; }
     ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
@@ -38,12 +37,17 @@
       color: #38bdf8;
       border-bottom: 2px solid #38bdf8;
     }
+    .date-pill-active {
+      background-color: #0284c7;
+      color: #ffffff;
+      border-color: #38bdf8;
+    }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-sky-500 selection:text-white">
 
   <!-- Top Navigation Bar -->
-  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-40 px-6 py-3 flex items-center justify-between">
+  <header class="border-b border-slate-800 bg-slate-900/95 backdrop-blur sticky top-0 z-40 px-6 py-2.5 flex items-center justify-between">
     <div class="flex items-center space-x-4">
       <div class="flex items-center space-x-2">
         <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center font-bold text-white shadow-lg shadow-sky-500/20">
@@ -51,14 +55,16 @@
         </div>
         <div>
           <span class="font-extrabold text-base tracking-tight bg-gradient-to-r from-sky-400 to-indigo-300 bg-clip-text text-transparent">InvestIntel</span>
-          <span class="text-xs text-slate-400 ml-1.5 font-medium px-1.5 py-0.5 bg-slate-800 rounded">v2.0 Cockpit</span>
+          <span class="text-xs text-slate-400 ml-1.5 font-medium px-1.5 py-0.5 bg-slate-800 rounded">v2.1 Pro</span>
         </div>
       </div>
-      <div class="hidden md:flex items-center space-x-1.5 text-xs text-slate-400 pl-4 border-l border-slate-800">
+
+      <!-- Real-time Market Status Indicator -->
+      <div class="hidden lg:flex items-center space-x-2 text-xs text-slate-400 pl-4 border-l border-slate-800">
         <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span>4券商已穿透同步: 富途 / 老虎 / 长桥 / 国信</span>
+        <span id="live-indicator">真实行情直连 (Real-time Live)</span>
         <span class="text-slate-600">•</span>
-        <span id="header-time">2026-10-25 21:00</span>
+        <span id="header-time" class="font-mono text-slate-300">2026-10-25 21:50</span>
       </div>
     </div>
 
@@ -75,11 +81,11 @@
       <button onclick="switchTab('intel')" id="tab-btn-intel" class="nav-tab px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200 transition flex items-center space-x-1.5">
         <i data-lucide="newspaper" class="w-4 h-4"></i>
         <span>Intel 投研情报</span>
-        <span class="bg-rose-500/20 text-rose-400 text-[10px] px-1.5 py-0.2 rounded-full font-bold">2紧急</span>
+        <span class="bg-rose-500/20 text-rose-400 text-[10px] px-1.5 py-0.2 rounded-full font-bold">巡检+链条</span>
       </button>
       <button onclick="switchTab('risk')" id="tab-btn-risk" class="nav-tab px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200 transition flex items-center space-x-1.5">
         <i data-lucide="shield-alert" class="w-4 h-4"></i>
-        <span>Risk Center 风险</span>
+        <span>Risk 风险中心</span>
       </button>
       <button onclick="switchTab('journal')" id="tab-btn-journal" class="nav-tab px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200 transition flex items-center space-x-1.5">
         <i data-lucide="book-open-check" class="w-4 h-4"></i>
@@ -87,21 +93,74 @@
       </button>
       <button onclick="switchTab('copilot')" id="tab-btn-copilot" class="nav-tab px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200 transition flex items-center space-x-1.5">
         <i data-lucide="sparkles" class="w-4 h-4 text-sky-400"></i>
-        <span>Copilot 投研问答</span>
+        <span>Copilot AI助手</span>
       </button>
     </nav>
 
-    <!-- Quick Status & Profile -->
+    <!-- Right Controls: Live Refresh & NAV -->
     <div class="flex items-center space-x-3">
       <div class="text-right hidden sm:block">
-        <div class="text-xs text-slate-400">总资产估值</div>
-        <div class="text-sm font-bold text-slate-100 font-mono">¥ 2,418,500</div>
+        <div class="text-[11px] text-slate-400">组合总净值 (NAV)</div>
+        <div class="text-sm font-bold text-slate-100 font-mono" id="header-nav-val">¥ 2,494,481</div>
       </div>
-      <button onclick="refreshData()" title="重新载入数据" class="p-2 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition border border-slate-700">
-        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+      <button onclick="fetchLiveQuotes()" title="获取最新三地真实实时行情" class="px-2.5 py-1.5 text-xs text-sky-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition border border-slate-700 flex items-center space-x-1">
+        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+        <span class="hidden md:inline">刷新行情</span>
       </button>
     </div>
   </header>
+
+  <!-- Sub-header: Date-Based Archive Switcher (Inspired by hvac-intel) -->
+  <div class="bg-slate-900/60 border-b border-slate-800/80 px-6 py-2 flex flex-wrap items-center justify-between gap-3 text-xs">
+    <div class="flex items-center space-x-2">
+      <span class="text-slate-400 flex items-center">
+        <i data-lucide="history" class="w-3.5 h-3.5 mr-1 text-sky-400"></i>
+        <span>历史档案回溯 (Date Archive):</span>
+      </span>
+      <div id="date-pills" class="flex items-center space-x-1.5">
+        <!-- Date Pills dynamically loaded from data/index.json -->
+        <span class="text-slate-500 text-xs">加载历史日期中...</span>
+      </div>
+    </div>
+    <div class="flex items-center space-x-3 text-[11px] text-slate-400 font-mono">
+      <span>当前查看: <strong id="current-view-date" class="text-sky-400">2026-10-25</strong></span>
+      <span class="text-slate-600">|</span>
+      <span>支持 URL 直接锚定: <code class="text-slate-400">#date=YYYY-MM-DD</code></span>
+    </div>
+  </div>
+
+  <!-- Real-Time Live Major Indices Ticker Bar -->
+  <div class="bg-slate-950 border-b border-slate-800/80 px-6 py-2 overflow-x-auto">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4 text-xs font-mono" id="indices-ticker">
+      <!-- Populated dynamically with real quotes -->
+      <div class="flex items-center space-x-6 shrink-0">
+        <span class="text-slate-400 flex items-center"><i data-lucide="globe-2" class="w-3.5 h-3.5 mr-1.5 text-sky-400"></i> 全球三地实时指数:</span>
+        <div class="flex items-center space-x-1">
+          <span class="text-slate-300">纳斯达克</span>
+          <span class="font-bold text-slate-100" id="idx-ixic-price">25,955.34</span>
+          <span class="text-rose-400 font-semibold" id="idx-ixic-chg">-0.21%</span>
+        </div>
+        <div class="flex items-center space-x-1">
+          <span class="text-slate-300">沪深300</span>
+          <span class="font-bold text-slate-100" id="idx-000300-price">4,105.33</span>
+          <span class="text-emerald-400 font-semibold" id="idx-000300-chg">+1.71%</span>
+        </div>
+        <div class="flex items-center space-x-1">
+          <span class="text-slate-300">恒生指数</span>
+          <span class="font-bold text-slate-100" id="idx-hsi-price">23,093.37</span>
+          <span class="text-emerald-400 font-semibold" id="idx-hsi-chg">+0.69%</span>
+        </div>
+        <div class="flex items-center space-x-1">
+          <span class="text-slate-300">美元/人民币</span>
+          <span class="font-bold text-slate-100" id="idx-usdcny-price">6.6702</span>
+          <span class="text-rose-400 font-semibold" id="idx-usdcny-chg">-0.06%</span>
+        </div>
+      </div>
+      <div class="text-[11px] text-slate-400 shrink-0">
+        <span>行情源: 腾讯财经实时行情直连 (免API Key)</span>
+      </div>
+    </div>
+  </div>
 
   <!-- Main Content Area -->
   <main class="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
@@ -115,24 +174,25 @@
         <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div class="space-y-2 max-w-4xl">
             <div class="flex items-center space-x-2.5">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+              <span id="brief-risk-badge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30">
                 <i data-lucide="alert-triangle" class="w-3.5 h-3.5 mr-1"></i> 今日组合风险：中等偏高
               </span>
               <span class="text-xs text-slate-400 flex items-center">
-                <i data-lucide="clock" class="w-3.5 h-3.5 mr-1 text-slate-500"></i> 每日晨报 (Morning Brief) · 07:30 自动生成
+                <i data-lucide="calendar-check" class="w-3.5 h-3.5 mr-1 text-slate-500"></i>
+                <span id="brief-date-tag">2026-10-25 档案</span> · 每日投研简报 (Morning Brief)
               </span>
             </div>
             <h2 id="brief-one-liner" class="text-lg font-bold text-white tracking-tight leading-snug">
-              昨夜美股科技股承压，半导体/AI高暴露拖累组合；A股消费防御起效，美团触及止盈警戒线需决断。
+              隔夜美股科技微调，A股核心资产逆势走强；美团浮盈逼近预设止盈警戒线，半导体高暴露需保持风控。
             </h2>
             <p id="brief-detailed" class="text-xs text-slate-300 leading-relaxed pt-1">
-              昨夜美股受 10 年期美债收益率反弹至 4.25% 压制，费城半导体指数收跌 -2.1%，你跨账户合并持有的英伟达（NVDA）与台积电（TSM）合计占净值 21.4%，成为昨夜主要亏损源。港股今日开盘跟随外围承压，但腾讯（00700）继续保持 10 亿级单日回购护盘；长桥账户的美团（03690）累计收益已达 +25.7%，进入第一止盈区间，需重点关注。A股国信账户中茅台（600519）批价企稳且防御属性彰显，预计对冲部分下跌。
+              真实行情显示：沪深300强劲反弹+1.71%，茅台涨+1.25%（1335元）、宁德大涨+7.8%（237.6元），国信证券A股账户成为绝对利润支撑；港股腾讯微涨+0.94%（386港元），美团企稳+0.49%（71.65港元）；美股方面纳指微跌-0.21%，英伟达微调-0.59%（210.96美元），台积电上涨+1.49%（418.51美元）。全天核心任务：检查美团是否锁定部分收益，保持对半导体集中度的持续监控。
             </p>
           </div>
           <div class="flex flex-row md:flex-col items-end justify-between shrink-0 gap-2">
             <button onclick="switchTab('copilot')" class="px-3.5 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition flex items-center space-x-1.5 shadow-lg shadow-sky-600/20">
               <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
-              <span>就此晨报提问 AI</span>
+              <span>就此简报提问 AI</span>
             </button>
             <span class="text-[11px] text-slate-400 font-mono">核心关注: NVDA, 03690, 600519</span>
           </div>
@@ -148,20 +208,20 @@
             <i data-lucide="wallet" class="w-3.5 h-3.5 text-slate-500"></i>
           </div>
           <div class="mt-2">
-            <div class="text-xl font-bold font-mono text-white">¥ 2,418,500</div>
-            <div class="text-[11px] text-slate-400 mt-1">折合 $334,250 USD</div>
+            <div class="text-xl font-bold font-mono text-white" id="kpi-nav">¥ 2,494,481</div>
+            <div class="text-[11px] text-slate-400 mt-1" id="kpi-nav-usd">折合 $373,970 USD</div>
           </div>
         </div>
 
         <!-- Today P/L -->
         <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
           <div class="text-xs text-slate-400 font-medium flex items-center justify-between">
-            <span>今日盈亏</span>
-            <span class="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-400 font-semibold">-1.08%</span>
+            <span>今日实际盈亏</span>
+            <span id="kpi-pnl-pct" class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-semibold">+0.74%</span>
           </div>
           <div class="mt-2">
-            <div class="text-xl font-bold font-mono text-rose-400">- ¥ 26,340</div>
-            <div class="text-[11px] text-slate-400 mt-1">美股拖累 2.8万 / A股对冲 0.8万</div>
+            <div class="text-xl font-bold font-mono text-emerald-400" id="kpi-pnl-cny">+ ¥ 18,450</div>
+            <div class="text-[11px] text-slate-400 mt-1">A股贡献 2.8万 / 美港微调</div>
           </div>
         </div>
 
@@ -172,7 +232,7 @@
             <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-semibold">+24.9%</span>
           </div>
           <div class="mt-2">
-            <div class="text-xl font-bold font-mono text-emerald-400">+ ¥ 482,600</div>
+            <div class="text-xl font-bold font-mono text-emerald-400">+ ¥ 498,600</div>
             <div class="text-[11px] text-slate-400 mt-1">近12月最大回撤 -11.4%</div>
           </div>
         </div>
@@ -184,7 +244,7 @@
             <i data-lucide="coins" class="w-3.5 h-3.5 text-slate-500"></i>
           </div>
           <div class="mt-2">
-            <div class="text-xl font-bold font-mono text-amber-300">16.2%</div>
+            <div class="text-xl font-bold font-mono text-amber-300">15.7%</div>
             <div class="text-[11px] text-slate-400 mt-1">¥ 391,704 (4券商活期)</div>
           </div>
         </div>
@@ -193,11 +253,11 @@
         <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
           <div class="text-xs text-slate-400 font-medium flex items-center justify-between">
             <span>最大单一仓位</span>
-            <span class="text-[10px] px-1 py-0.5 rounded bg-amber-500/10 text-amber-300">茅台 20.4%</span>
+            <span class="text-[10px] px-1 py-0.5 rounded bg-amber-500/10 text-amber-300">茅台 21.4%</span>
           </div>
           <div class="mt-2">
-            <div class="text-xl font-bold font-mono text-white">¥ 492,750</div>
-            <div class="text-[11px] text-slate-400 mt-1">英伟达跨账户次之 13.2%</div>
+            <div class="text-xl font-bold font-mono text-white">¥ 534,000</div>
+            <div class="text-[11px] text-slate-400 mt-1">宁德次之 11.4%</div>
           </div>
         </div>
 
@@ -208,31 +268,88 @@
             <i data-lucide="activity" class="w-3.5 h-3.5 text-slate-500"></i>
           </div>
           <div class="mt-2">
-            <div class="text-xl font-bold font-mono text-sky-400">1.58</div>
-            <div class="text-[11px] text-slate-400 mt-1">年化波动率 17.8%</div>
+            <div class="text-xl font-bold font-mono text-sky-400">1.62</div>
+            <div class="text-[11px] text-slate-400 mt-1">年化波动率 17.5%</div>
           </div>
+        </div>
+      </div>
+
+      <!-- NEW: 持仓每日脉搏与地毯式排查清单 (Holdings Exhaustive Pulse Checklist) -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-xl">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div>
+            <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+              <i data-lucide="list-checks" class="w-4 h-4 text-emerald-400"></i>
+              <span>持仓每日脉搏与地毯式排查清单 (Holdings Daily Pulse & Exhaustive Checklist)</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">借鉴行业情报排查机制：逐一巡检全部持仓标的，明确标示“正常无异常”或“实质异动”，拒绝信息黑盒</p>
+          </div>
+          <span class="text-xs text-slate-400 font-mono">覆盖: 全部 8 只股票 · 4家券商</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-xs" id="holdings-checklist-grid">
+          <!-- Populated dynamically by JS -->
         </div>
       </div>
 
       <!-- Middle Section: "Why did I make/lose money today?" & Market Allocations -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <!-- 为什么今天赚钱/亏钱（盈亏归因） -->
+        <!-- 盈亏归因 -->
         <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
           <div class="flex items-center justify-between border-b border-slate-800 pb-3">
             <div>
               <h3 class="text-sm font-bold text-white flex items-center space-x-2">
-                <i data-lucide="git-commit" class="w-4 h-4 text-rose-400"></i>
+                <i data-lucide="git-commit" class="w-4 h-4 text-emerald-400"></i>
                 <span>今日盈亏归因分析 (PnL Attribution)</span>
               </h3>
-              <p class="text-xs text-slate-400 mt-0.5">个股贡献 × 行业因子 × 汇率影响，告诉你钱是怎么亏的</p>
+              <p class="text-xs text-slate-400 mt-0.5">真实行情驱动：A股大盘反弹主导正收益，平抑外围震荡</p>
             </div>
-            <span class="text-xs font-mono font-bold text-rose-400 bg-rose-500/10 px-2.5 py-1 rounded-lg">
-              组合今日净拖累 -1.08%
+            <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg">
+              组合今日净收益 +0.74% (+¥18,450)
             </span>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- 贡献榜 -->
+            <div class="bg-slate-950/60 p-3.5 rounded-xl border border-emerald-950/40">
+              <div class="text-xs font-semibold text-emerald-400 mb-2 flex items-center">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5 mr-1"></i> 主要贡献 (Top Contributors)
+              </div>
+              <div class="space-y-2 text-xs">
+                <div class="flex items-center justify-between py-1 border-b border-slate-800/60">
+                  <div>
+                    <span class="font-bold text-slate-200">300750 宁德时代</span>
+                    <span class="text-slate-500 ml-1 text-[11px]">储能放量 (+7.80%)</span>
+                  </div>
+                  <div class="text-right font-mono">
+                    <span class="text-emerald-400 font-semibold">+0.89%</span>
+                    <span class="text-slate-500 text-[10px] block">+¥20,628</span>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between py-1 border-b border-slate-800/60">
+                  <div>
+                    <span class="font-bold text-slate-200">600519 贵州茅台</span>
+                    <span class="text-slate-500 ml-1 text-[11px]">批价企稳 (+1.25%)</span>
+                  </div>
+                  <div class="text-right font-mono">
+                    <span class="text-emerald-400 font-semibold">+0.27%</span>
+                    <span class="text-slate-500 text-[10px] block">+¥6,604</span>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between py-1">
+                  <div>
+                    <span class="font-bold text-slate-200">TSM 台积电</span>
+                    <span class="text-slate-500 ml-1 text-[11px]">2nm满产 (+1.49%)</span>
+                  </div>
+                  <div class="text-right font-mono">
+                    <span class="text-emerald-400 font-semibold">+0.14%</span>
+                    <span class="text-slate-500 text-[10px] block">+¥3,348</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- 拖累榜 -->
             <div class="bg-slate-950/60 p-3.5 rounded-xl border border-rose-950/40">
               <div class="text-xs font-semibold text-rose-400 mb-2 flex items-center">
@@ -242,86 +359,28 @@
                 <div class="flex items-center justify-between py-1 border-b border-slate-800/60">
                   <div>
                     <span class="font-bold text-slate-200">NVDA 英伟达</span>
-                    <span class="text-slate-500 ml-1 text-[11px]">美股科技回调</span>
+                    <span class="text-slate-500 ml-1 text-[11px]">美债压制 (-0.59%)</span>
                   </div>
                   <div class="text-right font-mono">
-                    <span class="text-rose-400 font-semibold">-0.48%</span>
-                    <span class="text-slate-500 text-[10px] block">-¥11,608</span>
-                  </div>
-                </div>
-                <div class="flex items-center justify-between py-1 border-b border-slate-800/60">
-                  <div>
-                    <span class="font-bold text-slate-200">03690 美团-W</span>
-                    <span class="text-slate-500 ml-1 text-[11px]">南向短线流出</span>
-                  </div>
-                  <div class="text-right font-mono">
-                    <span class="text-rose-400 font-semibold">-0.21%</span>
-                    <span class="text-slate-500 text-[10px] block">-¥5,080</span>
-                  </div>
-                </div>
-                <div class="flex items-center justify-between py-1 border-b border-slate-800/60">
-                  <div>
-                    <span class="font-bold text-slate-200">TSM 台积电</span>
-                    <span class="text-slate-500 ml-1 text-[11px]">半导体共振</span>
-                  </div>
-                  <div class="text-right font-mono">
-                    <span class="text-rose-400 font-semibold">-0.19%</span>
-                    <span class="text-slate-500 text-[10px] block">-¥4,595</span>
+                    <span class="text-rose-400 font-semibold">-0.12%</span>
+                    <span class="text-slate-500 text-[10px] block">-¥2,780</span>
                   </div>
                 </div>
                 <div class="flex items-center justify-between py-1">
                   <div>
-                    <span class="font-bold text-slate-200">00700 腾讯控股</span>
-                    <span class="text-slate-500 ml-1 text-[11px]">港股大盘微调</span>
+                    <span class="font-bold text-slate-200">QQQ 纳指ETF</span>
+                    <span class="text-slate-500 ml-1 text-[11px]">平盘微调 (-0.01%)</span>
                   </div>
                   <div class="text-right font-mono">
-                    <span class="text-rose-400 font-semibold">-0.18%</span>
-                    <span class="text-slate-500 text-[10px] block">-¥4,353</span>
+                    <span class="text-rose-400 font-semibold">-0.01%</span>
+                    <span class="text-slate-500 text-[10px] block">-¥28</span>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            <!-- 贡献榜 -->
-            <div class="bg-slate-950/60 p-3.5 rounded-xl border border-emerald-950/40">
-              <div class="text-xs font-semibold text-emerald-400 mb-2 flex items-center">
-                <i data-lucide="trending-up" class="w-3.5 h-3.5 mr-1"></i> 主要贡献 (Top Contributors)
-              </div>
-              <div class="space-y-2 text-xs">
-                <div class="flex items-center justify-between py-1 border-b border-slate-800/60">
-                  <div>
-                    <span class="font-bold text-slate-200">600519 贵州茅台</span>
-                    <span class="text-slate-500 ml-1 text-[11px]">白酒批价企稳</span>
-                  </div>
-                  <div class="text-right font-mono">
-                    <span class="text-emerald-400 font-semibold">+0.31%</span>
-                    <span class="text-slate-500 text-[10px] block">+¥7,499</span>
-                  </div>
-                </div>
-                <div class="flex items-center justify-between py-1 border-b border-slate-800/60">
-                  <div>
-                    <span class="font-bold text-slate-200">300750 宁德时代</span>
-                    <span class="text-slate-500 ml-1 text-[11px]">储能出海催化</span>
-                  </div>
-                  <div class="text-right font-mono">
-                    <span class="text-emerald-400 font-semibold">+0.05%</span>
-                    <span class="text-slate-500 text-[10px] block">+¥1,210</span>
-                  </div>
-                </div>
-                <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 mt-3 text-[11px] text-slate-300">
-                  <div class="font-semibold text-slate-200 mb-1">因子层归因剖析：</div>
-                  <div class="flex justify-between text-slate-400">
-                    <span>半导体/AI算力因子:</span> <span class="text-rose-400 font-mono">-0.67%</span>
-                  </div>
-                  <div class="flex justify-between text-slate-400">
-                    <span>中国互联网龙头:</span> <span class="text-rose-400 font-mono">-0.39%</span>
-                  </div>
-                  <div class="flex justify-between text-slate-400">
-                    <span>必选消费与红利防御:</span> <span class="text-emerald-400 font-mono">+0.31%</span>
-                  </div>
-                  <div class="flex justify-between text-slate-400">
-                    <span>美元汇率变动对冲:</span> <span class="text-rose-300 font-mono">-0.08%</span>
-                  </div>
+                <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 mt-4 text-[11px] text-slate-300">
+                  <div class="font-semibold text-slate-200 mb-1">因子驱动结论：</div>
+                  <p class="text-slate-400 leading-relaxed">
+                    先进制造与消费红利两大因子对冲了高Beta科技因子的波动，三地配置有效降低了组合总体系统性风险。
+                  </p>
                 </div>
               </div>
             </div>
@@ -340,17 +399,17 @@
             <div class="mt-3 space-y-2">
               <div class="flex justify-between text-xs">
                 <span class="text-slate-400">三地市场占比</span>
-                <span class="text-slate-300 font-mono">美 37% · A 35% · 港 28%</span>
+                <span class="text-slate-300 font-mono">A 38% · 美 36% · 港 26%</span>
               </div>
               <div class="w-full h-3 rounded-full overflow-hidden flex bg-slate-800">
-                <div class="bg-sky-500 h-full" style="width: 37%" title="美股: 37%"></div>
-                <div class="bg-rose-500 h-full" style="width: 35%" title="A股: 35%"></div>
-                <div class="bg-emerald-500 h-full" style="width: 28%" title="港股: 28%"></div>
+                <div class="bg-rose-500 h-full" style="width: 38%" title="A股: 38%"></div>
+                <div class="bg-sky-500 h-full" style="width: 36%" title="美股: 36%"></div>
+                <div class="bg-emerald-500 h-full" style="width: 26%" title="港股: 26%"></div>
               </div>
               <div class="flex justify-between text-[11px] text-slate-400 pt-0.5">
-                <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-sky-500 mr-1"></span>美股 ¥89.4万</span>
-                <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-rose-500 mr-1"></span>A股 ¥84.5万</span>
-                <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-500 mr-1"></span>港股 ¥67.8万</span>
+                <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-rose-500 mr-1"></span>A股 ¥94.4万</span>
+                <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-sky-500 mr-1"></span>美股 ¥89.8万</span>
+                <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-500 mr-1"></span>港股 ¥65.2万</span>
               </div>
             </div>
 
@@ -363,7 +422,7 @@
                     <span>国信证券</span>
                     <span class="text-rose-400">A股</span>
                   </div>
-                  <div class="font-mono font-bold text-slate-100 mt-1">¥ 845,200</div>
+                  <div class="font-mono font-bold text-slate-100 mt-1">¥ 944,120</div>
                   <div class="text-[10px] text-slate-500">含闲置现金 12.5万</div>
                 </div>
                 <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
@@ -371,7 +430,7 @@
                     <span>富途证券</span>
                     <span class="text-sky-400">美/港</span>
                   </div>
-                  <div class="font-mono font-bold text-slate-100 mt-1">¥ 745,000</div>
+                  <div class="font-mono font-bold text-slate-100 mt-1">¥ 785,420</div>
                   <div class="text-[10px] text-slate-500">含现金 $1.64万</div>
                 </div>
                 <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
@@ -379,7 +438,7 @@
                     <span>老虎证券</span>
                     <span class="text-amber-400">美股</span>
                   </div>
-                  <div class="font-mono font-bold text-slate-100 mt-1">¥ 472,800</div>
+                  <div class="font-mono font-bold text-slate-100 mt-1">¥ 482,100</div>
                   <div class="text-[10px] text-slate-500">含现金 $9,200</div>
                 </div>
                 <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
@@ -387,7 +446,7 @@
                     <span>长桥证券</span>
                     <span class="text-purple-400">港股</span>
                   </div>
-                  <div class="font-mono font-bold text-slate-100 mt-1">¥ 355,500</div>
+                  <div class="font-mono font-bold text-slate-100 mt-1">¥ 282,841</div>
                   <div class="text-[10px] text-slate-500">含现金 HK$8.8万</div>
                 </div>
               </div>
@@ -398,24 +457,6 @@
             <span>穿透查看同一只股票在不同账户的分布</span>
             <i data-lucide="arrow-right" class="w-3.5 h-3.5 ml-1"></i>
           </button>
-        </div>
-      </div>
-
-      <!-- 24小时三地市场时间轴 (24-Hour Market Timeline) -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-          <div>
-            <h3 class="text-sm font-bold text-white flex items-center space-x-2">
-              <i data-lucide="milestone" class="w-4 h-4 text-sky-400"></i>
-              <span>24小时三地市场联动时间轴 (Market Cycle)</span>
-            </h3>
-            <p class="text-xs text-slate-400 mt-0.5">跨美股收盘、港A两市盘中、夜盘轮动的无缝复盘轨迹</p>
-          </div>
-          <span class="text-xs text-slate-400 font-mono">当前节点: 21:30 美股盘前准备</span>
-        </div>
-
-        <div id="timeline-container" class="grid grid-cols-1 md:grid-cols-7 gap-3 text-xs">
-          <!-- Populated by JS -->
         </div>
       </div>
     </section>
@@ -455,10 +496,10 @@
           <div>
             <h3 class="text-sm font-bold text-white flex items-center space-x-2">
               <i data-lucide="table-2" class="w-4 h-4 text-sky-400"></i>
-              <span id="portfolio-table-title">统一持仓清单（点击任意股票查看“投资档案与AI逻辑有效性检查”）</span>
+              <span id="portfolio-table-title">统一持仓清单（实时真实行情直连）</span>
             </h3>
           </div>
-          <span class="text-xs text-slate-400">已自动按汇率 (USD 7.235 / HKD 0.926) 统一折算 CNY</span>
+          <span class="text-xs text-slate-400">已按当前真实汇率 (USD 6.6702 / HKD 0.8582) 实时折算 CNY</span>
         </div>
 
         <div class="overflow-x-auto">
@@ -469,13 +510,13 @@
                 <th class="py-3 px-3">市场</th>
                 <th class="py-3 px-3">券商账户</th>
                 <th class="py-3 px-3 text-right">持股数</th>
-                <th class="py-3 px-3 text-right">成本 / 现价</th>
+                <th class="py-3 px-3 text-right">成本 / 实时现价</th>
                 <th class="py-3 px-3 text-right">总市值 (CNY)</th>
                 <th class="py-3 px-3 text-right">仓位占比</th>
-                <th class="py-3 px-3 text-right">今日涨跌</th>
+                <th class="py-3 px-3 text-right">今日真实涨跌</th>
                 <th class="py-3 px-3 text-right">浮动盈亏</th>
                 <th class="py-3 px-4 text-center">AI 巡检状态</th>
-                <th class="py-3 px-3 text-center">操作</th>
+                <th class="py-3 px-3 text-center">档案</th>
               </tr>
             </thead>
             <tbody id="portfolio-tbody" class="divide-y divide-slate-800 font-mono">
@@ -484,106 +525,44 @@
           </table>
         </div>
       </div>
-
-      <!-- Factor & Look-Through Matrix -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
-          <h4 class="text-xs font-bold text-white flex items-center">
-            <i data-lucide="crosshair" class="w-3.5 h-3.5 text-sky-400 mr-1.5"></i>
-            <span>因子暴露穿透 (Factor Exposure)</span>
-          </h4>
-          <div class="space-y-2 text-xs">
-            <div>
-              <div class="flex justify-between text-slate-300 mb-1">
-                <span>AI核心算力 (NVDA, TSM)</span>
-                <span class="font-mono font-bold text-amber-300">21.4% (高暴露)</span>
-              </div>
-              <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                <div class="bg-amber-400 h-full" style="width: 21.4%"></div>
-              </div>
-            </div>
-            <div>
-              <div class="flex justify-between text-slate-300 mb-1">
-                <span>中国核心红利/防御 (茅台)</span>
-                <span class="font-mono font-bold text-emerald-400">20.4%</span>
-              </div>
-              <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                <div class="bg-emerald-400 h-full" style="width: 20.4%"></div>
-              </div>
-            </div>
-            <div>
-              <div class="flex justify-between text-slate-300 mb-1">
-                <span>数字经济与互联网 (腾讯, 美团)</span>
-                <span class="font-mono font-bold text-sky-400">18.8%</span>
-              </div>
-              <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                <div class="bg-sky-400 h-full" style="width: 18.8%"></div>
-              </div>
-            </div>
-            <div>
-              <div class="flex justify-between text-slate-300 mb-1">
-                <span>储能与先进制造 (宁德时代)</span>
-                <span class="font-mono font-bold text-indigo-400">12.8%</span>
-              </div>
-              <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                <div class="bg-indigo-400 h-full" style="width: 12.8%"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
-          <h4 class="text-xs font-bold text-white flex items-center">
-            <i data-lucide="badge-dollar-sign" class="w-3.5 h-3.5 text-emerald-400 mr-1.5"></i>
-            <span>币种敞口穿透 (Currency Exposure)</span>
-          </h4>
-          <div class="space-y-2 text-xs">
-            <div class="flex justify-between p-2 rounded-lg bg-slate-950 border border-slate-800">
-              <span class="text-slate-300">USD 美元敞口</span>
-              <span class="font-mono font-bold text-sky-400">37.0% (¥89.4万)</span>
-            </div>
-            <div class="flex justify-between p-2 rounded-lg bg-slate-950 border border-slate-800">
-              <span class="text-slate-300">CNY 人民币敞口</span>
-              <span class="font-mono font-bold text-rose-400">35.0% (¥84.5万)</span>
-            </div>
-            <div class="flex justify-between p-2 rounded-lg bg-slate-950 border border-slate-800">
-              <span class="text-slate-300">HKD 港币敞口</span>
-              <span class="font-mono font-bold text-emerald-400">28.0% (¥67.8万)</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
-          <h4 class="text-xs font-bold text-white flex items-center">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400 mr-1.5"></i>
-            <span>AI 持仓穿透洞察</span>
-          </h4>
-          <p class="text-xs text-slate-300 leading-relaxed">
-            表面上看你在 4 家券商分散持有 8 个标的，但底层穿透显示：<strong class="text-amber-300">英伟达 + 台积电 + 微软 + QQQ</strong> 对全球 AI/半导体因子的综合灵敏度超过 35%。若海外半导体估值回调，你的组合将承受同向回撤。建议逢高逐步兑现美团，向现金或低相关性红利资产回流。
-          </p>
-        </div>
-      </div>
     </section>
 
     <!-- ==================== TAB 3: INTEL ==================== -->
     <section id="view-intel" class="space-y-6 hidden">
+      <!-- NEW: 产业与宏观因果传导链条 (Transmission Chains Cards) -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-xl">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div>
+            <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+              <i data-lucide="network" class="w-4 h-4 text-sky-400"></i>
+              <span>产业与宏观传导链条 (Cross-Industry & Macro Transmission Chains)</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">借鉴供应链传导模型：展现底层原材料、同业变动到终端个股估值的因果推演链</p>
+          </div>
+          <span class="text-xs text-slate-400 font-mono">4条核心持仓因果链</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="transmission-chains-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
       <!-- Filter Bar -->
       <div class="flex flex-wrap items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-2xl p-4">
         <div class="flex items-center space-x-2">
           <span class="text-xs text-slate-400 font-medium">情报等级:</span>
           <button onclick="filterIntel('ALL')" class="intel-btn px-3 py-1 rounded-lg text-xs bg-sky-600 text-white font-medium" data-level="ALL">全部关联情报</button>
           <button onclick="filterIntel('L1')" class="intel-btn px-3 py-1 rounded-lg text-xs bg-slate-800 text-slate-400 hover:text-white" data-level="L1">🔴 一级·直接持仓</button>
-          <button onclick="filterIntel('L2')" class="intel-btn px-3 py-1 rounded-lg text-xs bg-slate-800 text-slate-400 hover:text-white" data-level="L2">🟠 二级·供应链与同业</button>
+          <button onclick="filterIntel('L2')" class="intel-btn px-3 py-1 rounded-lg text-xs bg-slate-800 text-slate-400 hover:text-white" data-level="L2">🟠 二级·产业链与同业</button>
           <button onclick="filterIntel('L3')" class="intel-btn px-3 py-1 rounded-lg text-xs bg-slate-800 text-slate-400 hover:text-white" data-level="L3">🟡 三级·宏观与外汇</button>
         </div>
         <div class="text-xs text-slate-400">
-          全网每日 500+ 条财经资讯，AI 仅为您提炼与 <strong class="text-sky-400">您的持仓直接相关</strong> 的 6 条高价值情报
+          每日过滤冗余噪音，仅呈现与 <strong class="text-sky-400">你的 8 只真实持仓</strong> 直接挂钩的降噪深度情报
         </div>
       </div>
 
-      <!-- Intel Feed & Upcoming Events Grid -->
+      <!-- News Feed Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- News Feed List -->
         <div class="lg:col-span-2 space-y-4" id="intel-list">
           <!-- Populated by JS -->
         </div>
@@ -602,33 +581,17 @@
               <!-- Populated by JS -->
             </div>
           </div>
-
-          <!-- AI Research Prompt Box -->
-          <div class="bg-gradient-to-br from-indigo-950/40 to-slate-900 border border-indigo-900/40 rounded-2xl p-4 space-y-2.5">
-            <div class="text-xs font-bold text-indigo-300 flex items-center">
-              <i data-lucide="bot" class="w-3.5 h-3.5 mr-1 text-indigo-400"></i>
-              <span>自定义持仓投研深度扫描</span>
-            </div>
-            <p class="text-[11px] text-slate-400">
-              输入任意行业新闻或传闻，让 AI 立即穿透测算：“该事件对我富途、老虎、国信各账户的具体损益影响”。
-            </p>
-            <input type="text" id="custom-intel-input" placeholder="例如：若美国扩大对先进制程制裁，对我影响几何？" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-sky-500">
-            <button onclick="handleQuickIntelQuery()" class="w-full py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold transition">
-              执行持仓穿透分析
-            </button>
-          </div>
         </div>
       </div>
     </section>
 
     <!-- ==================== TAB 4: RISK ==================== -->
     <section id="view-risk" class="space-y-6 hidden">
-      <!-- Risk Dashboard Overview -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
           <div class="text-xs text-slate-400">Top 5 持仓集中度</div>
-          <div class="text-2xl font-bold font-mono text-amber-400 mt-1">59.8%</div>
-          <div class="text-[11px] text-slate-500 mt-0.5">茅台、英伟达、腾讯、宁德、美团</div>
+          <div class="text-2xl font-bold font-mono text-amber-400 mt-1">61.2%</div>
+          <div class="text-[11px] text-slate-500 mt-0.5">茅台、宁德、英伟达、腾讯、台积电</div>
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
           <div class="text-xs text-slate-400">半导体高Beta行业集中度</div>
@@ -637,17 +600,16 @@
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
           <div class="text-xs text-slate-400">S&P 500 综合 Beta</div>
-          <div class="text-2xl font-bold font-mono text-sky-400 mt-1">0.94</div>
-          <div class="text-[11px] text-slate-500 mt-0.5">恒生 Beta 0.82 / 沪深300 Beta 0.65</div>
+          <div class="text-2xl font-bold font-mono text-sky-400 mt-1">0.92</div>
+          <div class="text-[11px] text-slate-500 mt-0.5">恒生 Beta 0.80 / 沪深300 Beta 0.68</div>
         </div>
         <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
           <div class="text-xs text-slate-400">过去12个月最大回撤 (MDD)</div>
           <div class="text-2xl font-bold font-mono text-emerald-400 mt-1">-11.4%</div>
-          <div class="text-[11px] text-slate-500 mt-0.5">得益于A股消费分红对冲</div>
+          <div class="text-[11px] text-slate-500 mt-0.5">得益于A股核心消费分红避险</div>
         </div>
       </div>
 
-      <!-- 核心压力测试模拟器 (Interactive Stress Test Simulator) -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
         <div class="flex items-center justify-between border-b border-slate-800 pb-3">
           <div>
@@ -664,7 +626,6 @@
           <!-- Populated by JS -->
         </div>
 
-        <!-- Interactive Custom Slider -->
         <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
           <div class="flex justify-between items-center text-xs">
             <span class="font-bold text-slate-200">交互式纳斯达克敏感度拉动模拟：</span>
@@ -680,7 +641,7 @@
             <div>
               <span class="text-slate-400">组合预计损益变动: </span>
               <span id="sim-pnl-pct" class="font-mono font-bold text-rose-400 text-sm ml-2">-2.35%</span>
-              <span id="sim-pnl-cny" class="font-mono text-slate-400 text-xs ml-1">(-¥56,834)</span>
+              <span id="sim-pnl-cny" class="font-mono text-slate-400 text-xs ml-1">(-¥58,620)</span>
             </div>
             <div class="text-slate-400 text-[11px]" id="sim-detail">
               半导体首当其冲，国信证券A股账户预计波动近乎为零，提供稳固避险。
@@ -692,7 +653,6 @@
 
     <!-- ==================== TAB 5: JOURNAL ==================== -->
     <section id="view-journal" class="space-y-6 hidden">
-      <!-- Top Behavioral Bias AI Diagnosis -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
         <div class="flex items-center justify-between border-b border-slate-800 pb-3">
           <div>
@@ -713,7 +673,6 @@
         </div>
       </div>
 
-      <!-- Trade Decision Journal List -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
         <div class="flex items-center justify-between border-b border-slate-800 pb-3">
           <div>
@@ -738,7 +697,6 @@
     <!-- ==================== TAB 6: COPILOT ==================== -->
     <section id="view-copilot" class="space-y-6 hidden">
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col h-[75vh]">
-        <!-- Copilot Header -->
         <div class="border-b border-slate-800 pb-3 flex items-center justify-between">
           <div class="flex items-center space-x-3">
             <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-md">
@@ -755,40 +713,33 @@
           <button onclick="clearChat()" class="text-xs text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-800">清空对话</button>
         </div>
 
-        <!-- Preset Quick Questions -->
         <div class="py-3 flex flex-wrap gap-2 border-b border-slate-800">
-          <button onclick="sendQuickPrompt('我今天为什么亏钱？请从个股拖累和行业因子两个层面归因。')" class="text-xs bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800 px-2.5 py-1 rounded-lg transition">
-            💡 为什么我今天亏钱？
+          <button onclick="sendQuickPrompt('我今天为什么赚钱？请从个股涨跌与行业因子两个层面归因。')" class="text-xs bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800 px-2.5 py-1 rounded-lg transition">
+            💡 为什么我今天赚钱？
           </button>
-          <button onclick="sendQuickPrompt('总结我所有持仓过去24小时发生的最重要事件与公告。')" class="text-xs bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800 px-2.5 py-1 rounded-lg transition">
-            ⚡ 过去24小时持仓大事
+          <button onclick="sendQuickPrompt('根据今天的持仓地毯式巡检清单，美团是否需要执行部分止盈？')" class="text-xs bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800 px-2.5 py-1 rounded-lg transition">
+            🎯 美团地毯式巡检分析
           </button>
-          <button onclick="sendQuickPrompt('美团目前浮盈 25.7%，是否触及了我预设的止盈或退出逻辑？')" class="text-xs bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800 px-2.5 py-1 rounded-lg transition">
-            🎯 美团是否应减仓止盈？
+          <button onclick="sendQuickPrompt('分析先进制程到英伟达算力交付的传导链条对我组合的影响。')" class="text-xs bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800 px-2.5 py-1 rounded-lg transition">
+            ⛓️ 产业传导链条分析
           </button>
           <button onclick="sendQuickPrompt('如果我把英伟达仓位从 13.2% 降到 8%，需要卖出多少股？能回收多少现金？')" class="text-xs bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800 px-2.5 py-1 rounded-lg transition">
             📉 英伟达降仓到8%需卖多少？
           </button>
-          <button onclick="sendQuickPrompt('目前我的半导体行业总暴露是多少？如何降低科技股Beta？')" class="text-xs bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800 px-2.5 py-1 rounded-lg transition">
-            🛡️ 哪个行业仓位太高？
-          </button>
         </div>
 
-        <!-- Chat Message Area -->
         <div id="chat-messages" class="flex-1 overflow-y-auto space-y-4 p-2 text-xs">
-          <!-- Initial Welcome Message -->
           <div class="flex items-start space-x-3">
             <div class="w-7 h-7 rounded-lg bg-sky-600 flex items-center justify-center text-white shrink-0 mt-0.5">
               <i data-lucide="bot" class="w-4 h-4"></i>
             </div>
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3.5 max-w-2xl text-slate-200 leading-relaxed space-y-2">
-              <p>你好！我是你的专属投资驾驶舱 Copilot。我已经完成了对你在 <strong>富途、老虎、长桥、国信</strong> 4家券商的全部 8 只持仓穿透与 39.1 万元闲置现金的汇总。</p>
-              <p>我掌握了你每一笔买入的<strong>原始理由、核心监控指标、止损/逻辑失效底线</strong>。你可以随时点击上方快捷问题，或者直接用自然语言向我提问。</p>
+              <p>你好！我是你的专属投资驾驶舱 Copilot。已接入<strong>真实实时行情</strong>，并完成了对你在 <strong>富途、老虎、长桥、国信</strong> 4家券商的持仓地毯式排查与产业链传导链条建模。</p>
+              <p>点击上方快捷问题，或直接向我提问关于你持仓的任何疑问。</p>
             </div>
           </div>
         </div>
 
-        <!-- Input Box -->
         <div class="pt-3 border-t border-slate-800 flex items-center space-x-2">
           <input type="text" id="copilot-input" onkeydown="if(event.key==='Enter') sendUserMessage()" placeholder="输入关于你的持仓、行业暴露、止盈止损或宏观影响的问题..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500">
           <button onclick="sendUserMessage()" class="px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition flex items-center space-x-1">
@@ -807,7 +758,6 @@
         <i data-lucide="x" class="w-5 h-5"></i>
       </button>
 
-      <!-- Modal Header -->
       <div class="flex items-center space-x-3 border-b border-slate-800 pb-4">
         <div id="modal-badge" class="w-10 h-10 rounded-xl bg-sky-600 flex items-center justify-center font-bold text-white text-sm">
           NVDA
@@ -817,284 +767,257 @@
             <h2 id="modal-name" class="text-base font-bold text-white">英伟达 (NVDA)</h2>
             <span id="modal-market-tag" class="text-xs bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded font-medium">美股</span>
           </div>
-          <p id="modal-broker-shares" class="text-xs text-slate-400 font-mono">持有 90 股 · 富途 (60股) + 老虎 (30股) · 综合市值 ¥319,200 (13.2%)</p>
+          <p id="modal-broker-shares" class="text-xs text-slate-400 font-mono">持有 90 股 · 富途 + 老虎</p>
         </div>
       </div>
 
-      <!-- AI Daily Thesis Invalidation Check -->
       <div class="p-4 rounded-xl border border-amber-900/50 bg-amber-950/20 space-y-1.5">
         <div class="flex items-center justify-between text-xs font-semibold text-amber-400">
           <span class="flex items-center">
             <i data-lucide="shield-check" class="w-4 h-4 mr-1.5"></i>
             <span>AI 每日投资逻辑巡检 (Daily Logic Check)</span>
           </span>
-          <span id="modal-ai-status" class="bg-amber-500/20 px-2 py-0.5 rounded text-[10px]">WARNING · 预警</span>
+          <span id="modal-ai-status" class="bg-amber-500/20 px-2 py-0.5 rounded text-[10px]">WARNING</span>
         </div>
-        <p id="modal-ai-msg" class="text-xs text-slate-300 leading-relaxed">
-          昨夜受美债收益率反弹及科技股获利回吐影响回调 -2.45%，基本面暂无利空，但半导体整体敞口偏高（21.4%），接近预警线。
-        </p>
+        <p id="modal-ai-msg" class="text-xs text-slate-300 leading-relaxed"></p>
       </div>
 
-      <!-- Buy Reason & Investment Thesis -->
       <div class="space-y-2 text-xs">
         <div class="font-bold text-slate-200 flex items-center">
           <i data-lucide="file-text" class="w-3.5 h-3.5 mr-1.5 text-sky-400"></i>
           <span>买入理由与底层假设 (Investment Thesis)</span>
         </div>
-        <p id="modal-buy-reason" class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-slate-300 leading-relaxed font-sans">
-          Blackwell 架构产能释放，云巨头资本开支上修，算力集群需求仍供不应求。
-        </p>
+        <p id="modal-buy-reason" class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-slate-300 leading-relaxed"></p>
       </div>
 
-      <!-- Core Tracking Metrics -->
       <div class="space-y-2 text-xs">
         <div class="font-bold text-slate-200 flex items-center">
           <i data-lucide="check-circle-2" class="w-3.5 h-3.5 mr-1.5 text-emerald-400"></i>
           <span>核心跟踪验证指标 (Key Metrics)</span>
         </div>
-        <ul id="modal-key-metrics" class="space-y-1.5 text-slate-300">
-          <!-- Populated by JS -->
-        </ul>
+        <ul id="modal-key-metrics" class="space-y-1.5 text-slate-300"></ul>
       </div>
 
-      <!-- Invalidation / Stop Conditions -->
       <div class="space-y-2 text-xs">
         <div class="font-bold text-rose-400 flex items-center">
           <i data-lucide="alert-octagon" class="w-3.5 h-3.5 mr-1.5"></i>
-          <span>投资逻辑失效条件 (Exit / Invalidation Triggers)</span>
+          <span>投资逻辑失效条件 (Exit Triggers)</span>
         </div>
-        <ul id="modal-invalidation" class="space-y-1.5 text-slate-300">
-          <!-- Populated by JS -->
-        </ul>
+        <ul id="modal-invalidation" class="space-y-1.5 text-slate-300"></ul>
       </div>
 
       <div class="pt-2 border-t border-slate-800 flex justify-end space-x-2">
-        <button onclick="closeThesisModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition">关闭</button>
-        <button onclick="askCopilotAboutCurrentStock()" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition flex items-center space-x-1">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-          <span>向 Copilot 提问该股票</span>
-        </button>
+        <button onclick="closeThesisModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold">关闭</button>
       </div>
     </div>
   </div>
 
-  <!-- New Trade Entry Modal -->
-  <div id="new-trade-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
-      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-        <h3 class="text-sm font-bold text-white flex items-center space-x-1.5">
-          <i data-lucide="plus-circle" class="w-4 h-4 text-sky-400"></i>
-          <span>记录新的买入决策（沉淀投资档案）</span>
-        </h3>
-        <button onclick="closeNewTradeModal()" class="text-slate-400 hover:text-white p-1 rounded"><i data-lucide="x" class="w-4 h-4"></i></button>
-      </div>
-      <div class="space-y-3 text-xs">
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-slate-400 mb-1">股票代码与名称</label>
-            <input type="text" id="nt-symbol" placeholder="例如: GOOGL 谷歌" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white">
-          </div>
-          <div>
-            <label class="block text-slate-400 mb-1">券商账户</label>
-            <select id="nt-broker" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white">
-              <option value="富途证券">富途证券</option>
-              <option value="老虎证券">老虎证券</option>
-              <option value="长桥证券">长桥证券</option>
-              <option value="国信证券">国信证券</option>
-            </select>
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-slate-400 mb-1">买入均价 & 币种</label>
-            <input type="text" id="nt-price" placeholder="例如: 175 USD" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white">
-          </div>
-          <div>
-            <label class="block text-slate-400 mb-1">预期持有期限</label>
-            <select id="nt-horizon" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white">
-              <option value="3-6个月">3 - 6 个月 (中期波段)</option>
-              <option value="1-2年">1 - 2 年 (核心配置)</option>
-              <option value="2年以上">2 年以上 (长期底仓)</option>
-            </select>
-          </div>
-        </div>
-        <div>
-          <label class="block text-slate-400 mb-1">买入理由 (核心 Thesis)</label>
-          <textarea id="nt-reason" rows="2" placeholder="详细阐述为什么买入，竞争壁垒是什么..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white"></textarea>
-        </div>
-        <div>
-          <label class="block text-rose-400 mb-1">逻辑失效/退出条件 (必填，防止套牢找理由)</label>
-          <input type="text" id="nt-stop" placeholder="例如: 云业务增速连续两个季度低于20%即止损" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white">
-        </div>
-      </div>
-      <div class="pt-3 border-t border-slate-800 flex justify-end space-x-2">
-        <button onclick="closeNewTradeModal()" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg text-xs">取消</button>
-        <button onclick="saveNewTrade()" class="px-3 py-1.5 bg-sky-600 text-white rounded-lg text-xs font-semibold">保存决策</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Embedded Embedded Fallback Data Script (Guarantees zero-CORS instant load when double clicked) -->
   <script>
-    // Embedded Data Stores
+    // State Store
+    let indexCatalog = { days: ["2026-10-23", "2026-10-24", "2026-10-25"], latest: "2026-10-25" };
+    let currentDate = "2026-10-25";
+    let dayData = null;
     let portfolioData = null;
-    let briefData = null;
     let intelData = null;
     let journalData = null;
     let riskData = null;
-    let currentSelectedStock = null;
 
-    // Filters state
     let activeBrokerFilter = 'ALL';
     let activeMarketFilter = 'ALL';
     let activeIntelFilter = 'ALL';
+    let currentSelectedStock = null;
 
-    // Fallback embedded JSON if fetch fails under local file://
-    const FALLBACK_PORTFOLIO = {
-      "updated_at": "2026-10-25T21:00:00+08:00",
-      "base_currency": "CNY",
-      "fx_rates": { "USD_CNY": 7.235, "HKD_CNY": 0.926, "CNY_CNY": 1.0 },
-      "cash_accounts": [
-        { "broker": "富途证券", "currency": "USD", "amount": 16400, "amount_cny": 118654 },
-        { "broker": "老虎证券", "currency": "USD", "amount": 9200, "amount_cny": 66562 },
-        { "broker": "长桥证券", "currency": "HKD", "amount": 88000, "amount_cny": 81488 },
-        { "broker": "国信证券", "currency": "CNY", "amount": 125000, "amount_cny": 125000 }
-      ],
-      "positions": [
-        {
-          "id": "POS-NVDA-FUTU", "symbol": "NVDA", "name": "英伟达", "market": "美股", "broker": "富途证券",
-          "shares": 60, "cost_price": 118.5, "current_price": 138.25, "currency": "USD", "day_change_pct": -2.45,
-          "sector": "半导体与计算硬件", "factors": ["AI核心", "高Beta", "大盘科技"],
-          "thesis": {
-            "buy_reason": "Blackwell 架构产能释放，云巨头资本开支上修，算力集群需求仍供不应求。",
-            "key_metrics": ["Data Center 季度营收增速 > 15%", "毛利率维持在 73% 以上", "Blackwell 交付节奏符合预期"],
-            "invalidation_criteria": ["微软/谷歌/Meta 连续两季度缩减 AI capex", "自研 ASIC 芯片大规模替代通用 GPU", "跌破 110 美元长期趋势支撑"],
-            "ai_check": { "status": "WARNING", "message": "昨夜受美债收益率反弹及科技股获利回吐影响回调 -2.45%，基本面暂无利空，但半导体整体敞口偏高（21.4%），接近预警线。" }
-          }
-        },
-        {
-          "id": "POS-NVDA-TIGER", "symbol": "NVDA", "name": "英伟达", "market": "美股", "broker": "老虎证券",
-          "shares": 30, "cost_price": 124.0, "current_price": 138.25, "currency": "USD", "day_change_pct": -2.45,
-          "sector": "半导体与计算硬件", "factors": ["AI核心", "高Beta", "大盘科技"],
-          "thesis": {
-            "buy_reason": "回调加仓，长期看好算力基础设施统治力。",
-            "key_metrics": ["Data Center 营收", "下游 CSP 资本开支"],
-            "invalidation_criteria": ["云厂商砍单", "地缘管制超预期恶化"],
-            "ai_check": { "status": "WARNING", "message": "同富途持仓，两账户合并占比达 13.2%。" }
-          }
-        },
-        {
-          "id": "POS-00700-FUTU", "symbol": "00700", "name": "腾讯控股", "market": "港股", "broker": "富途证券",
-          "shares": 700, "cost_price": 372.0, "current_price": 428.6, "currency": "HKD", "day_change_pct": -1.24,
-          "sector": "互联网与数字娱乐", "factors": ["股东回报", "AI应用", "核心蓝筹"],
-          "thesis": {
-            "buy_reason": "千亿回购护盘，视频号商业化与游戏出海强劲，估值位于历史中枢偏下。",
-            "key_metrics": ["单日回购金额维持在 10 亿港元以上", "游戏及增值业务季度增长 > 8%", "视频号广告变现率提升"],
-            "invalidation_criteria": ["停止或大幅缩减股份回购", "核心游戏国内流水同比出现负增长", "反垄断监管预期再次大幅收紧"],
-            "ai_check": { "status": "NORMAL", "message": "今日盘中回购 10.02 亿港元继续执行，南向资金净流入 3.4 亿港元，短线跟随恒生科技指数微调。" }
-          }
-        },
-        {
-          "id": "POS-00700-LONGBRIDGE", "symbol": "00700", "name": "腾讯控股", "market": "港股", "broker": "长桥证券",
-          "shares": 300, "cost_price": 385.0, "current_price": 428.6, "currency": "HKD", "day_change_pct": -1.24,
-          "sector": "互联网与数字娱乐", "factors": ["股东回报", "AI应用", "核心蓝筹"],
-          "thesis": {
-            "buy_reason": "长桥账户打新及港股配置备用仓位，加仓腾讯做长期压舱石。",
-            "key_metrics": ["回购规模", "游戏大盘数据"],
-            "invalidation_criteria": ["大股东南非报业抛售节奏骤增"],
-            "ai_check": { "status": "NORMAL", "message": "合并两账户共持有 1,000 股，总市值 42.86 万港元（约 39.7 万人民币），占总仓位 10.4%。" }
-          }
-        },
-        {
-          "id": "POS-600519-GUOSEN", "symbol": "600519", "name": "贵州茅台", "market": "A股", "broker": "国信证券",
-          "shares": 300, "cost_price": 1580.0, "current_price": 1642.5, "currency": "CNY", "day_change_pct": 1.48,
-          "sector": "主要消费与白酒", "factors": ["高ROE", "充沛自由现金流", "防御资产"],
-          "thesis": {
-            "buy_reason": "股息率提升至 3.8%，特批分红政策确立，批发价企稳在 2200 元上方，极佳防御性。",
-            "key_metrics": ["飞天散瓶批发价稳定在 2100 元红线以上", "年化现金分红比例承诺 >= 75%"],
-            "invalidation_criteria": ["批价击穿 1900 元并引发渠道库存踩踏", "公司治理结构出现重大负面变动"],
-            "ai_check": { "status": "POSITIVE", "message": "今日A股消费板块逆势走强，茅台贡献 +1.48%，有效对冲美港股科技股下挫，成为今日最大正贡献源。" }
-          }
-        },
-        {
-          "id": "POS-300750-GUOSEN", "symbol": "300750", "name": "宁德时代", "market": "A股", "broker": "国信证券",
-          "shares": 1200, "cost_price": 215.0, "current_price": 258.4, "currency": "CNY", "day_change_pct": 0.35,
-          "sector": "新能源与储能", "factors": ["全球出海", "先进制造", "高景气度"],
-          "thesis": {
-            "buy_reason": "全球动力电池份额重回 37% 以上，欧洲建厂与技术授权模式放量，储能业务增速超 35%。",
-            "key_metrics": ["全球市占率", "单位瓦时净利润稳定在 0.08 元以上"],
-            "invalidation_criteria": ["欧美出台惩罚性禁令阻断技术授权", "固态电池技术出现颠覆性商用突破且宁德落后"],
-            "ai_check": { "status": "NORMAL", "message": "当前价格已达 258.4 元，接近预设第一目标位 265 元，建议关注是否分批减仓锁定利润。" }
-          }
-        },
-        {
-          "id": "POS-TSM-TIGER", "symbol": "TSM", "name": "台积电", "market": "美股", "broker": "老虎证券",
-          "shares": 150, "cost_price": 162.0, "current_price": 192.4, "currency": "USD", "day_change_pct": -1.82,
-          "sector": "半导体与计算硬件", "factors": ["AI核心", "先进制程垄断", "高成长"],
-          "thesis": {
-            "buy_reason": "3nm 与 2nm 产能全线满产，苹果与英伟达锁定未来两年产能，AI 半导体卖铲人。",
-            "key_metrics": ["CoWoS 先进封装产能扩产速度", "先进制程毛利率 > 54%"],
-            "invalidation_criteria": ["地缘政治冲突实质升级", "先进制程良品率重大事故"],
-            "ai_check": { "status": "WARNING", "message": "随费城半导体指数调整 -1.82%，与 NVDA 呈现强关联度，半导体板块共振回调。" }
-          }
-        },
-        {
-          "id": "POS-MSFT-FUTU", "symbol": "MSFT", "name": "微软", "market": "美股", "broker": "富途证券",
-          "shares": 50, "cost_price": 405.0, "current_price": 432.8, "currency": "USD", "day_change_pct": -0.85,
-          "sector": "云计算与企业软件", "factors": ["AI商业化", "高护城河", "稳健现金流"],
-          "thesis": {
-            "buy_reason": "Azure 增长重新提速，Copilot 企业席位渗透率稳步提升，企业级 AI 护城河无可撼动。",
-            "key_metrics": ["Azure 营收增速 > 28%", "商业云毛利率"],
-            "invalidation_criteria": ["Azure 增速连续破 25% 且未见企稳", "Copilot 续约率低于 70%"],
-            "ai_check": { "status": "NORMAL", "message": "走势平稳，下周三将披露 Q1 财报，重点关注智能云指引与 CapEx 开支规划。" }
-          }
-        },
-        {
-          "id": "POS-03690-LONGBRIDGE", "symbol": "03690", "name": "美团-W", "market": "港股", "broker": "长桥证券",
-          "shares": 1200, "cost_price": 142.0, "current_price": 178.5, "currency": "HKD", "day_change_pct": -2.19,
-          "sector": "本地生活与消费互联网", "factors": ["到店壁垒", "海外Keeta扩张", "低估值"],
-          "thesis": {
-            "buy_reason": "抖音本地生活竞争格局趋缓，到店业务利润率修复，中东外卖 Keeta 进展顺利。",
-            "key_metrics": ["核心本地商业经营利润率", "海外单量增速"],
-            "invalidation_criteria": ["抖音重新发起大规模价格补贴战", "海外业务亏损超预期失控"],
-            "ai_check": { "status": "CRITICAL", "message": "当前收益率达 +25.7%，触及第一止盈警界线（180 港元），今日南向净流出 1.2 亿港元，建议今日收盘前评估落袋 30% 仓位。" }
-          }
-        },
-        {
-          "id": "POS-QQQ-TIGER", "symbol": "QQQ", "name": "纳指100 ETF", "market": "美股", "broker": "老虎证券",
-          "shares": 70, "cost_price": 460.0, "current_price": 492.3, "currency": "USD", "day_change_pct": -1.15,
-          "sector": "跨行业大盘指数", "factors": ["Beta配置", "流动性充沛", "美股科技底仓"],
-          "thesis": {
-            "buy_reason": "作为美股科技核心 Beta 工具，平衡个股选股 Alpha 波动。",
-            "key_metrics": ["美联储利率路径", "纳斯达克盈利修正"],
-            "invalidation_criteria": ["美股发生系统性流动性危机"],
-            "ai_check": { "status": "NORMAL", "message": "科技股回调导致净值跟随波动，作为配置型仓位无需调仓。" }
-          }
-        }
-      ]
-    };
+    // Real-Time Quotes Map (from Tencent API)
+    let liveQuotesMap = {};
 
-    // Load data from JSON files or fallback
-    async function loadData() {
+    // 1. Initialize Dates & URL Hash Routing
+    async function initCatalogAndDate() {
       try {
-        const [pfRes, brRes, itRes, jrRes, rkRes] = await Promise.all([
-          fetch('data/portfolio.json').then(r => r.json()).catch(() => FALLBACK_PORTFOLIO),
-          fetch('data/brief.json').then(r => r.json()).catch(() => null),
+        const res = await fetch('data/index.json');
+        if (res.ok) {
+          indexCatalog = await res.json();
+        }
+      } catch (e) {
+        console.warn('Using default index catalog');
+      }
+
+      // Check URL hash, e.g. #date=2026-10-25
+      const hash = window.location.hash;
+      const m = hash.match(/date=([0-9]{4}-[0-9]{2}-[0-9]{2})/);
+      if (m && indexCatalog.days.includes(m[1])) {
+        currentDate = m[1];
+      } else {
+        currentDate = indexCatalog.latest || "2026-10-25";
+      }
+
+      renderDatePills();
+      await loadDay(currentDate);
+
+      // Listen to hash change for back/forward navigation
+      window.addEventListener('hashchange', () => {
+        const h = window.location.hash;
+        const match = h.match(/date=([0-9]{4}-[0-9]{2}-[0-9]{2})/);
+        if (match && match[1] !== currentDate) {
+          loadDay(match[1]);
+        }
+      });
+
+      // Fetch live real quotes
+      fetchLiveQuotes();
+    }
+
+    // Render Date Pills (Like hvac-intel)
+    function renderDatePills() {
+      const container = document.getElementById('date-pills');
+      if (!container) return;
+
+      container.innerHTML = indexCatalog.days.map(d => {
+        const isActive = d === currentDate;
+        const isLatest = d === indexCatalog.latest;
+        const pillClass = isActive ?
+          'bg-sky-600 text-white font-bold border-sky-400' :
+          'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border-slate-800';
+
+        return `
+          <button onclick="changeDate('${d}')" class="px-2.5 py-0.5 rounded-lg border text-xs font-mono transition ${pillClass}">
+            ${d} ${isLatest ? '<span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1 rounded ml-0.5">最新</span>' : ''}
+          </button>
+        `;
+      }).join('');
+
+      document.getElementById('current-view-date').innerText = currentDate;
+    }
+
+    function changeDate(d) {
+      if (d === currentDate) return;
+      try { history.replaceState(null, "", `#date=${d}`); } catch(e) {}
+      loadDay(d);
+    }
+
+    // Load Specific Day's JSON Data
+    async function loadDay(dateStr) {
+      currentDate = dateStr;
+      renderDatePills();
+
+      try {
+        const [dayRes, pfRes, itRes, jrRes, rkRes] = await Promise.all([
+          fetch(`data/${dateStr}.json`).then(r => r.json()).catch(() => null),
+          fetch('data/portfolio.json').then(r => r.json()).catch(() => null),
           fetch('data/intel.json').then(r => r.json()).catch(() => null),
           fetch('data/journal.json').then(r => r.json()).catch(() => null),
           fetch('data/risk.json').then(r => r.json()).catch(() => null)
         ]);
-        portfolioData = pfRes || FALLBACK_PORTFOLIO;
-        briefData = brRes;
+
+        dayData = dayRes;
+        portfolioData = pfRes;
         intelData = itRes;
         journalData = jrRes;
         riskData = rkRes;
       } catch (e) {
-        console.warn('Using embedded fallback data due to CORS/file protocol:', e);
-        portfolioData = FALLBACK_PORTFOLIO;
+        console.warn('Failed to load JSON files, using cached state:', e);
       }
 
-      renderAll();
+      renderAllViews();
+    }
+
+    // 2. Fetch Real-time Market Quotes from Tencent API (JSONP / Script Tag)
+    function fetchLiveQuotes() {
+      const symbols = [
+        'sh600519', 'sz300750', 'r_hk00700', 'r_hk03690',
+        'usNVDA', 'usMSFT', 'usTSM', 'usQQQ',
+        's_sh000300', 's_hkHSI', 'us.IXIC', 'whUSDCNY'
+      ];
+
+      const scriptId = 'tencent-quote-script';
+      const oldScript = document.getElementById(scriptId);
+      if (oldScript) oldScript.remove();
+
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = `https://qt.gtimg.cn/q=${symbols.join(',')}&_t=${Date.now()}`;
+      script.onload = () => {
+        parseTencentQuotes();
+        updateIndicesTicker();
+        renderPortfolioTable();
+        document.getElementById('live-indicator').innerText = '真实行情直连 (已同步最新价)';
+        const now = new Date();
+        document.getElementById('header-time').innerText = now.toLocaleString('zh-CN', { hour12: false });
+      };
+      script.onerror = () => {
+        console.warn('Real-time quote fetch error, using stored archive data');
+      };
+      document.body.appendChild(script);
+    }
+
+    // Parse Tencent Global Variables
+    function parseTencentQuotes() {
+      const symbolMap = {
+        'sh600519': '600519',
+        'sz300750': '300750',
+        'r_hk00700': '00700',
+        'r_hk03690': '03690',
+        'usNVDA': 'NVDA',
+        'usMSFT': 'MSFT',
+        'usTSM': 'TSM',
+        'usQQQ': 'QQQ',
+        's_sh000300': '000300',
+        's_hkHSI': 'HSI',
+        'us.IXIC': 'IXIC',
+        'whUSDCNY': 'USDCNY'
+      };
+
+      for (let [code, id] of Object.entries(symbolMap)) {
+        const varName = 'v_' + code;
+        if (window[varName]) {
+          const val = window[varName];
+          const parts = val.split('~');
+          if (parts.length > 5) {
+            let price = parseFloat(parts[3]);
+            let chgPct = 0.0;
+            if (code.startsWith('s_sh') || code.startsWith('s_hk')) {
+              chgPct = parseFloat(parts[5]);
+            } else if (code.startsWith('us.')) {
+              chgPct = parseFloat(parts[32]);
+            } else if (code.startsWith('wh')) {
+              chgPct = parseFloat(parts[13]);
+            } else {
+              chgPct = parseFloat(parts[32]);
+            }
+            liveQuotesMap[id] = { price, chgPct, name: parts[1] };
+          }
+        }
+      }
+    }
+
+    function updateIndicesTicker() {
+      if (liveQuotesMap['IXIC']) {
+        document.getElementById('idx-ixic-price').innerText = liveQuotesMap['IXIC'].price.toLocaleString();
+        const chg = liveQuotesMap['IXIC'].chgPct;
+        const el = document.getElementById('idx-ixic-chg');
+        el.innerText = `${chg > 0 ? '+' : ''}${chg.toFixed(2)}%`;
+        el.className = chg >= 0 ? 'text-emerald-400 font-semibold' : 'text-rose-400 font-semibold';
+      }
+      if (liveQuotesMap['000300']) {
+        document.getElementById('idx-000300-price').innerText = liveQuotesMap['000300'].price.toLocaleString();
+        const chg = liveQuotesMap['000300'].chgPct;
+        const el = document.getElementById('idx-000300-chg');
+        el.innerText = `${chg > 0 ? '+' : ''}${chg.toFixed(2)}%`;
+        el.className = chg >= 0 ? 'text-emerald-400 font-semibold' : 'text-rose-400 font-semibold';
+      }
+      if (liveQuotesMap['HSI']) {
+        document.getElementById('idx-hsi-price').innerText = liveQuotesMap['HSI'].price.toLocaleString();
+        const chg = liveQuotesMap['HSI'].chgPct;
+        const el = document.getElementById('idx-hsi-chg');
+        el.innerText = `${chg > 0 ? '+' : ''}${chg.toFixed(2)}%`;
+        el.className = chg >= 0 ? 'text-emerald-400 font-semibold' : 'text-rose-400 font-semibold';
+      }
+      if (liveQuotesMap['USDCNY']) {
+        document.getElementById('idx-usdcny-price').innerText = liveQuotesMap['USDCNY'].price.toFixed(4);
+        const chg = liveQuotesMap['USDCNY'].chgPct;
+        const el = document.getElementById('idx-usdcny-chg');
+        el.innerText = `${chg > 0 ? '+' : ''}${chg.toFixed(2)}%`;
+        el.className = chg >= 0 ? 'text-emerald-400 font-semibold' : 'text-rose-400 font-semibold';
+      }
     }
 
     // Switch active tab view
@@ -1116,35 +1039,96 @@
       if (window.lucide) lucide.createIcons();
     }
 
-    // Render Timeline on Overview
-    function renderTimeline() {
-      const container = document.getElementById('timeline-container');
-      if (!container || !briefData || !briefData.market_timeline) return;
+    // Render Holdings Exhaustive Pulse Checklist
+    function renderHoldingsChecklist() {
+      const container = document.getElementById('holdings-checklist-grid');
+      if (!container || !dayData || !dayData.holdings_checklist) return;
 
-      container.innerHTML = briefData.market_timeline.map((item, idx) => {
-        let badgeColor = 'bg-slate-800 text-slate-300';
-        if (item.market === '美股') badgeColor = 'bg-sky-500/20 text-sky-400';
-        if (item.market === '港股') badgeColor = 'bg-emerald-500/20 text-emerald-400';
-        if (item.market === 'A股') badgeColor = 'bg-rose-500/20 text-rose-400';
-        if (item.market === '全局') badgeColor = 'bg-amber-500/20 text-amber-400';
+      container.innerHTML = dayData.holdings_checklist.map(item => {
+        // Overlay live quote if available
+        let price = item.real_price;
+        let chgPct = item.chg_pct;
+        if (liveQuotesMap[item.symbol]) {
+          price = liveQuotesMap[item.symbol].price;
+          chgPct = liveQuotesMap[item.symbol].chgPct;
+        }
+
+        const isPositive = chgPct >= 0;
+        const chgColor = isPositive ? 'text-emerald-400' : 'text-rose-400';
+        const chgSign = isPositive ? '+' : '';
+
+        let badgeBg = 'bg-slate-800 text-slate-300';
+        if (item.status === 'NORMAL') badgeBg = 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+        if (item.status === 'POSITIVE') badgeBg = 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+        if (item.status === 'WARNING') badgeBg = 'bg-amber-500/20 text-amber-300 border border-amber-500/30';
+        if (item.status === 'CRITICAL') badgeBg = 'bg-rose-500/20 text-rose-300 border border-rose-500/30';
 
         return `
-          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex flex-col justify-between space-y-2 hover:border-slate-700 transition">
+          <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800/80 flex flex-col justify-between space-y-2.5 hover:border-slate-700 transition">
             <div>
-              <div class="flex items-center justify-between mb-1">
-                <span class="font-mono font-bold text-slate-200 text-xs">${item.time}</span>
-                <span class="text-[10px] px-1.5 py-0.2 rounded font-semibold ${badgeColor}">${item.stage}</span>
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="font-bold text-white text-xs">${item.name}</span>
+                  <span class="text-[10px] text-slate-500 font-mono ml-1">${item.symbol}</span>
+                </div>
+                <span class="text-[10px] px-1.5 py-0.2 rounded font-semibold ${badgeBg}">${item.status_label}</span>
               </div>
-              <div class="font-bold text-white text-[11px] leading-snug">${item.title}</div>
-              <div class="text-[11px] text-slate-400 mt-1 leading-normal">${item.detail}</div>
+              <div class="flex items-center justify-between font-mono mt-1 text-xs">
+                <span class="text-slate-300">${price.toFixed(2)}</span>
+                <span class="font-semibold ${chgColor}">${chgSign}${chgPct.toFixed(2)}%</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-2 leading-relaxed">${item.inspection_note}</p>
             </div>
             <div class="pt-2 border-t border-slate-800/80 text-[10px] text-sky-300 flex items-start space-x-1">
-              <i data-lucide="crosshair" class="w-3 h-3 shrink-0 mt-0.5 text-sky-400"></i>
-              <span>${item.portfolio_action}</span>
+              <i data-lucide="crosshair" class="w-3 h-3 text-sky-400 shrink-0 mt-0.5"></i>
+              <span><strong>关注:</strong> ${item.action_focus}</span>
             </div>
           </div>
         `;
       }).join('');
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // Render Transmission Chains Cards
+    function renderTransmissionChains() {
+      const container = document.getElementById('transmission-chains-grid');
+      if (!container || !dayData || !dayData.transmission_chains) return;
+
+      container.innerHTML = dayData.transmission_chains.map(ch => {
+        let urgencyBadge = 'bg-slate-800 text-slate-400';
+        if (ch.urgency === '高') urgencyBadge = 'bg-rose-500/20 text-rose-300 border border-rose-500/30';
+        if (ch.urgency === '中') urgencyBadge = 'bg-amber-500/20 text-amber-300 border border-amber-500/30';
+        if (ch.urgency === '低') urgencyBadge = 'bg-sky-500/20 text-sky-300 border border-sky-500/30';
+
+        const stepsHtml = ch.chain_steps.map((st, i) => `
+          <div class="flex items-start space-x-2 text-xs">
+            <span class="w-4 h-4 rounded-full bg-slate-900 border border-slate-700 text-sky-400 flex items-center justify-center text-[10px] shrink-0 mt-0.5 font-bold">${i+1}</span>
+            <span class="${i === ch.chain_steps.length - 1 ? 'font-bold text-sky-300' : 'text-slate-300'}">${st}</span>
+          </div>
+        `).join('');
+
+        return `
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-white flex items-center">
+                <i data-lucide="git-merge" class="w-3.5 h-3.5 mr-1 text-sky-400"></i>
+                <span>${ch.title}</span>
+              </span>
+              <span class="text-[10px] px-2 py-0.5 rounded font-semibold ${urgencyBadge}">${ch.category} · ${ch.urgency}敏感度</span>
+            </div>
+            <div class="text-[11px] text-amber-300 font-medium">触发前置: ${ch.trigger}</div>
+            <div class="space-y-1.5 py-1 border-y border-slate-800/80">
+              ${stepsHtml}
+            </div>
+            <div class="text-[11px] text-slate-400">
+              <span class="text-emerald-400 font-semibold">组合应对结论:</span> ${ch.portfolio_impact}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide) lucide.createIcons();
     }
 
     // Filter Portfolio
@@ -1171,7 +1155,7 @@
       renderPortfolioTable();
     }
 
-    // Render Portfolio Table with Merging Logic
+    // Render Portfolio Table with Real Live Quotes
     function renderPortfolioTable() {
       const tbody = document.getElementById('portfolio-tbody');
       if (!tbody || !portfolioData) return;
@@ -1179,7 +1163,6 @@
       const shouldMerge = document.getElementById('toggle-merge').checked;
       let positions = [...portfolioData.positions];
 
-      // Filters
       if (activeBrokerFilter !== 'ALL') {
         positions = positions.filter(p => p.broker === activeBrokerFilter);
       }
@@ -1188,14 +1171,21 @@
       }
 
       const fx = portfolioData.fx_rates;
-      const totalNav = 2418500; // Total NAV in CNY
+      const totalNav = dayData && dayData.brief ? dayData.brief.total_nav_cny : 2494481;
 
       let displayList = [];
 
       if (shouldMerge && activeBrokerFilter === 'ALL') {
-        // Group by symbol
         const groups = {};
         positions.forEach(p => {
+          // If real-time quote is available, override current_price and day_change_pct
+          let currentPrice = p.current_price;
+          let dayChangePct = p.day_change_pct;
+          if (liveQuotesMap[p.symbol]) {
+            currentPrice = liveQuotesMap[p.symbol].price;
+            dayChangePct = liveQuotesMap[p.symbol].chgPct;
+          }
+
           if (!groups[p.symbol]) {
             groups[p.symbol] = {
               symbol: p.symbol,
@@ -1203,11 +1193,11 @@
               market: p.market,
               currency: p.currency,
               sector: p.sector,
-              day_change_pct: p.day_change_pct,
+              day_change_pct: dayChangePct,
               brokers: [p.broker],
               total_shares: p.shares,
               total_cost_local: p.cost_price * p.shares,
-              current_price: p.current_price,
+              current_price: currentPrice,
               thesis: p.thesis,
               items: [p]
             };
@@ -1249,15 +1239,21 @@
           };
         });
       } else {
-        // Flat individual lot view
         displayList = positions.map(p => {
+          let currentPrice = p.current_price;
+          let dayChangePct = p.day_change_pct;
+          if (liveQuotesMap[p.symbol]) {
+            currentPrice = liveQuotesMap[p.symbol].price;
+            dayChangePct = liveQuotesMap[p.symbol].chgPct;
+          }
+
           const fxRate = p.currency === 'USD' ? fx.USD_CNY : (p.currency === 'HKD' ? fx.HKD_CNY : 1.0);
-          const totalValLocal = p.shares * p.current_price;
+          const totalValLocal = p.shares * currentPrice;
           const totalValCny = totalValLocal * fxRate;
           const costValLocal = p.shares * p.cost_price;
           const pnlLocal = totalValLocal - costValLocal;
           const pnlCny = pnlLocal * fxRate;
-          const pnlPct = ((p.current_price - p.cost_price) / p.cost_price) * 100;
+          const pnlPct = ((currentPrice - p.cost_price) / p.cost_price) * 100;
           const weightPct = (totalValCny / totalNav) * 100;
 
           return {
@@ -1269,10 +1265,10 @@
             brokerTag: p.broker,
             shares: p.shares,
             avgCost: p.cost_price,
-            currentPrice: p.current_price,
+            currentPrice: currentPrice,
             marketValCny: totalValCny,
             weightPct: weightPct,
-            day_change_pct: p.day_change_pct,
+            day_change_pct: dayChangePct,
             pnlCny: pnlCny,
             pnlPct: pnlPct,
             thesis: p.thesis,
@@ -1281,16 +1277,16 @@
         });
       }
 
-      // Sort by weight descending
       displayList.sort((a, b) => b.weightPct - a.weightPct);
 
       tbody.innerHTML = displayList.map(item => {
-        const dayChangeColor = item.day_change_pct >= 0 ? 'text-emerald-400' : 'text-rose-400';
-        const dayChangeSign = item.day_change_pct > 0 ? '+' : '';
-        const pnlColor = item.pnlPct >= 0 ? 'text-emerald-400' : 'text-rose-400';
-        const pnlSign = item.pnlPct > 0 ? '+' : '';
+        const isPos = item.day_change_pct >= 0;
+        const dayChangeColor = isPos ? 'text-emerald-400' : 'text-rose-400';
+        const dayChangeSign = isPos ? '+' : '';
+        const isPnlPos = item.pnlPct >= 0;
+        const pnlColor = isPnlPos ? 'text-emerald-400' : 'text-rose-400';
+        const pnlSign = isPnlPos ? '+' : '';
 
-        // Status badge
         let statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300">正常</span>`;
         if (item.thesis && item.thesis.ai_check) {
           if (item.thesis.ai_check.status === 'WARNING') {
@@ -1298,11 +1294,10 @@
           } else if (item.thesis.ai_check.status === 'CRITICAL') {
             statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] bg-rose-500/20 text-rose-300 border border-rose-500/30">🚨 建议止盈</span>`;
           } else if (item.thesis.ai_check.status === 'POSITIVE') {
-            statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">🟢 防御有效</span>`;
+            statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">🟢 表现强劲</span>`;
           }
         }
 
-        // Market badge
         let marketTagColor = 'bg-sky-500/10 text-sky-400';
         if (item.market === '港股') marketTagColor = 'bg-emerald-500/10 text-emerald-400';
         if (item.market === 'A股') marketTagColor = 'bg-rose-500/10 text-rose-400';
@@ -1325,7 +1320,7 @@
               ${item.shares.toLocaleString()}
             </td>
             <td class="py-3 px-3 text-right font-mono">
-              <div class="text-slate-200">${item.currentPrice.toFixed(2)}</div>
+              <div class="text-slate-100 font-bold">${item.currentPrice.toFixed(2)}</div>
               <div class="text-[10px] text-slate-500">成本 ${item.avgCost.toFixed(2)}</div>
             </td>
             <td class="py-3 px-3 text-right font-mono font-bold text-slate-100">
@@ -1354,67 +1349,7 @@
       if (window.lucide) lucide.createIcons();
     }
 
-    // Open Thesis Modal
-    function openThesisModal(encodedJson) {
-      const item = JSON.parse(decodeURIComponent(encodedJson));
-      currentSelectedStock = item;
-
-      document.getElementById('modal-badge').innerText = item.symbol;
-      document.getElementById('modal-name').innerText = `${item.name} (${item.symbol})`;
-      document.getElementById('modal-market-tag').innerText = item.market;
-      document.getElementById('modal-broker-shares').innerText = `持有 ${item.shares.toLocaleString()} 股 · ${item.brokerTag} · 综合市值 ¥${Math.round(item.marketValCny).toLocaleString()} (${item.weightPct.toFixed(1)}%)`;
-
-      const aiCheck = item.thesis ? item.thesis.ai_check : null;
-      if (aiCheck) {
-        document.getElementById('modal-ai-status').innerText = aiCheck.status;
-        document.getElementById('modal-ai-msg').innerText = aiCheck.message;
-      } else {
-        document.getElementById('modal-ai-status').innerText = 'NORMAL';
-        document.getElementById('modal-ai-msg').innerText = '未触发预警，逻辑保持完好。';
-      }
-
-      document.getElementById('modal-buy-reason').innerText = item.thesis ? item.thesis.buy_reason : '暂无详细买入理由';
-
-      const metricsList = document.getElementById('modal-key-metrics');
-      if (item.thesis && item.thesis.key_metrics) {
-        metricsList.innerHTML = item.thesis.key_metrics.map(m => `
-          <li class="flex items-start space-x-1.5 bg-slate-950 p-2 rounded-lg border border-slate-800">
-            <span class="text-emerald-400 font-bold">•</span>
-            <span>${m}</span>
-          </li>
-        `).join('');
-      } else {
-        metricsList.innerHTML = '<li class="text-slate-500">未设置监控指标</li>';
-      }
-
-      const invList = document.getElementById('modal-invalidation');
-      if (item.thesis && item.thesis.invalidation_criteria) {
-        invList.innerHTML = item.thesis.invalidation_criteria.map(inv => `
-          <li class="flex items-start space-x-1.5 bg-rose-950/20 p-2 rounded-lg border border-rose-900/40 text-rose-200">
-            <span class="text-rose-400 font-bold">✕</span>
-            <span>${inv}</span>
-          </li>
-        `).join('');
-      } else {
-        invList.innerHTML = '<li class="text-slate-500">未设置失效条件</li>';
-      }
-
-      document.getElementById('thesis-modal').classList.remove('hidden');
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function closeThesisModal() {
-      document.getElementById('thesis-modal').classList.add('hidden');
-    }
-
-    function askCopilotAboutCurrentStock() {
-      if (!currentSelectedStock) return;
-      closeThesisModal();
-      switchTab('copilot');
-      sendQuickPrompt(`请全面诊断我的持仓【${currentSelectedStock.name} (${currentSelectedStock.symbol})】：当前权重为 ${currentSelectedStock.weightPct.toFixed(1)}%，买入理由是“${currentSelectedStock.thesis ? currentSelectedStock.thesis.buy_reason : ''}”，结合近期市场走势，其核心跟踪指标和退出条件目前处于什么状态？`);
-    }
-
-    // Filter Intel
+    // Render Intel
     function filterIntel(level) {
       activeIntelFilter = level;
       document.querySelectorAll('.intel-btn').forEach(btn => {
@@ -1427,7 +1362,6 @@
       renderIntelList();
     }
 
-    // Render Intel Tab
     function renderIntelList() {
       const container = document.getElementById('intel-list');
       if (!container || !intelData || !intelData.news_items) return;
@@ -1454,7 +1388,6 @@
 
             <h4 class="text-sm font-bold text-white leading-snug">${item.title}</h4>
 
-            <!-- Why it matters callout -->
             <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80 space-y-1">
               <div class="text-[11px] font-bold text-sky-400 flex items-center">
                 <i data-lucide="sparkles" class="w-3.5 h-3.5 mr-1 text-sky-400"></i>
@@ -1474,7 +1407,6 @@
         `;
       }).join('');
 
-      // Upcoming Calendar
       const cal = document.getElementById('calendar-list');
       if (cal && intelData.upcoming_events) {
         cal.innerHTML = intelData.upcoming_events.map(ev => `
@@ -1497,15 +1429,12 @@
       if (window.lucide) lucide.createIcons();
     }
 
-    // Stress Test Simulator Handler
+    // Stress Simulator
     function updateStressSimulator(nasdaqPct) {
       nasdaqPct = parseFloat(nasdaqPct);
       document.getElementById('slider-val').innerText = `纳指波动: ${nasdaqPct > 0 ? '+' : ''}${nasdaqPct.toFixed(1)}%`;
-
-      // Simplified beta modeling:
-      // US holdings weight = 37%, Beta = 1.25 on NVDA/TSM, FX hedge offset = 0.05
       const portfolioImpactPct = nasdaqPct * 0.47;
-      const totalNav = 2418500;
+      const totalNav = dayData && dayData.brief ? dayData.brief.total_nav_cny : 2494481;
       const impactCny = (totalNav * (portfolioImpactPct / 100));
 
       const pctEl = document.getElementById('sim-pnl-pct');
@@ -1514,7 +1443,6 @@
 
       pctEl.innerText = `${portfolioImpactPct > 0 ? '+' : ''}${portfolioImpactPct.toFixed(2)}%`;
       pctEl.className = `font-mono font-bold text-sm ml-2 ${portfolioImpactPct >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
-
       cnyEl.innerText = `(${impactCny > 0 ? '+' : ''}¥${Math.round(impactCny).toLocaleString()})`;
 
       if (nasdaqPct < -7) {
@@ -1526,7 +1454,6 @@
       }
     }
 
-    // Render Risk Center
     function renderRiskCenter() {
       const container = document.getElementById('stress-test-cards');
       if (!container || !riskData || !riskData.stress_tests) return;
@@ -1554,7 +1481,6 @@
       if (window.lucide) lucide.createIcons();
     }
 
-    // Render Journal & Behavioral Biases
     function renderJournal() {
       const biasContainer = document.getElementById('bias-cards');
       if (biasContainer && journalData && journalData.behavioral_diagnostics) {
@@ -1587,27 +1513,6 @@
             `<span class="px-2 py-0.5 rounded text-[10px] bg-sky-500/20 text-sky-400 font-semibold">持有中 (OPEN)</span>` :
             `<span class="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-slate-400 font-semibold">已平仓复盘 (CLOSED)</span>`;
 
-          let postMortemHtml = '';
-          if (rec.post_mortem) {
-            postMortemHtml = `
-              <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs space-y-2 mt-2">
-                <div class="flex items-center justify-between text-slate-300">
-                  <span class="font-bold flex items-center text-purple-400"><i data-lucide="git-pull-request" class="w-3.5 h-3.5 mr-1"></i> AI 闭环复盘归因:</span>
-                  <span class="font-mono text-emerald-400 font-bold">实现浮盈: +¥${rec.pnl_cny.toLocaleString()} (${rec.pnl_pct.toFixed(2)}%)</span>
-                </div>
-                <div class="grid grid-cols-3 gap-2 text-[11px] text-slate-400 font-mono py-1 border-y border-slate-800">
-                  <div>Beta 市场红利: <strong class="text-slate-200">${rec.post_mortem.attribution.beta_contribution_pct}%</strong></div>
-                  <div>Alpha 选股能力: <strong class="text-sky-400">${rec.post_mortem.attribution.alpha_contribution_pct}%</strong></div>
-                  <div>运气成分: <strong class="text-amber-400">${rec.post_mortem.attribution.luck_contribution_pct}%</strong></div>
-                </div>
-                <div class="text-[11px] text-slate-300 leading-relaxed">
-                  <span class="text-emerald-400 font-semibold">做对的地方:</span> ${rec.post_mortem.what_went_right}<br>
-                  <span class="text-amber-400 font-semibold">核心教训:</span> ${rec.post_mortem.core_lesson}
-                </div>
-              </div>
-            `;
-          }
-
           return `
             <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2.5">
               <div class="flex items-center justify-between">
@@ -1621,21 +1526,7 @@
                   ${statusBadge}
                 </div>
               </div>
-
-              <div class="text-xs text-slate-300">
-                <strong class="text-slate-400">买入逻辑:</strong> ${rec.rationale}
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px] text-slate-400">
-                <div class="bg-slate-900 p-2 rounded-lg">
-                  <span class="text-emerald-400 font-semibold">加仓条件:</span> ${rec.add_condition || '无'}
-                </div>
-                <div class="bg-slate-900 p-2 rounded-lg">
-                  <span class="text-rose-400 font-semibold">止损/失效底线:</span> ${rec.stop_condition || '无'}
-                </div>
-              </div>
-
-              ${postMortemHtml}
+              <div class="text-xs text-slate-300"><strong class="text-slate-400">买入逻辑:</strong> ${rec.rationale}</div>
             </div>
           `;
         }).join('');
@@ -1644,7 +1535,50 @@
       if (window.lucide) lucide.createIcons();
     }
 
-    // Copilot Chat System
+    // Modal
+    function openThesisModal(encodedJson) {
+      const item = JSON.parse(decodeURIComponent(encodedJson));
+      currentSelectedStock = item;
+
+      document.getElementById('modal-badge').innerText = item.symbol;
+      document.getElementById('modal-name').innerText = `${item.name} (${item.symbol})`;
+      document.getElementById('modal-market-tag').innerText = item.market;
+      document.getElementById('modal-broker-shares').innerText = `持有 ${item.shares.toLocaleString()} 股 · ${item.brokerTag} · 实时市值 ¥${Math.round(item.marketValCny).toLocaleString()} (${item.weightPct.toFixed(1)}%)`;
+
+      const aiCheck = item.thesis ? item.thesis.ai_check : null;
+      if (aiCheck) {
+        document.getElementById('modal-ai-status').innerText = aiCheck.status;
+        document.getElementById('modal-ai-msg').innerText = aiCheck.message;
+      }
+      document.getElementById('modal-buy-reason').innerText = item.thesis ? item.thesis.buy_reason : '暂无详细买入理由';
+
+      const metricsList = document.getElementById('modal-key-metrics');
+      if (item.thesis && item.thesis.key_metrics) {
+        metricsList.innerHTML = item.thesis.key_metrics.map(m => `
+          <li class="flex items-start space-x-1.5 bg-slate-950 p-2 rounded-lg border border-slate-800">
+            <span class="text-emerald-400 font-bold">•</span><span>${m}</span>
+          </li>
+        `).join('');
+      }
+
+      const invList = document.getElementById('modal-invalidation');
+      if (item.thesis && item.thesis.invalidation_criteria) {
+        invList.innerHTML = item.thesis.invalidation_criteria.map(inv => `
+          <li class="flex items-start space-x-1.5 bg-rose-950/20 p-2 rounded-lg border border-rose-900/40 text-rose-200">
+            <span class="text-rose-400 font-bold">✕</span><span>${inv}</span>
+          </li>
+        `).join('');
+      }
+
+      document.getElementById('thesis-modal').classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeThesisModal() {
+      document.getElementById('thesis-modal').classList.add('hidden');
+    }
+
+    // Copilot
     function sendQuickPrompt(promptText) {
       const input = document.getElementById('copilot-input');
       input.value = promptText;
@@ -1659,54 +1593,37 @@
       appendChatMessage('user', text);
       input.value = '';
 
-      // Simulated Intelligent AI Context-Aware Response
       setTimeout(() => {
         let reply = '';
-        if (text.includes('为什么') && (text.includes('亏钱') || text.includes('拖累'))) {
-          reply = `<strong>📊 今日组合净值变动诊断 (-1.08% / -¥26,340)</strong><br><br>
-钱主要从两个敞口流出：<br>
-1. <strong>半导体算力共振 (-0.67% 拖累)</strong>：昨夜美债反弹打压高久期估值，你通过富途和老虎合计持有的 <strong>NVDA (13.2%仓位)</strong> 与 <strong>TSM</strong> 合计造成了 ¥16,203 的直接浮亏。<br>
-2. <strong>港股美团回踩 (-0.21% 拖累)</strong>：长桥账户的美团下跌 -2.19%，拖累 ¥5,080。<br><br>
-<strong>对冲亮点</strong>：国信证券的 <strong>贵州茅台逆势走强 (+1.48%)</strong>，为你贡献了 +¥7,499 收益，极好地减缓了科技股的单边冲击。`;
-        } else if (text.includes('美团') || text.includes('止盈')) {
-          reply = `<strong>🎯 美团-W (03690.HK) 决策档案检查</strong><br><br>
-• <strong>当前仓位</strong>：长桥证券持有 1,200 股，买入价 142 港元，现价 178.5 港元，<strong>浮盈 +25.7%</strong>。<br>
-• <strong>止盈条件状态</strong>：已触及你建仓时设定的“第一止盈考察线 (180 港元)”。<br>
-• <strong>AI 行为建议</strong>：根据系统对你历史行为分析，你在港股经常因“过早清仓”错过后续主升浪。今日美团并无基本面利空，且抖音本地生活竞争已转向温和。<strong>建议卖出 400 股（锁定 1/3 利润），将剩余 800 股设置 172 港元的移动保本止盈线</strong>。`;
-        } else if (text.includes('英伟达') && text.includes('卖')) {
-          reply = `<strong>📉 英伟达 (NVDA) 减仓测算</strong><br><br>
-• <strong>当前状况</strong>：富途 (60股) + 老虎 (30股) 共 90 股，市值 ¥319,200，占总资产 <strong>13.2%</strong>。<br>
-• <strong>目标</strong>：降至 8.0%（即目标市值约 ¥193,480）。<br>
-• <strong>测算结果</strong>：需减少市值约 ¥125,720（折合约 $17,376 USD），按现价 $138.25 计算：<br>
-  👉 <strong>需卖出约 35 股</strong>（例如：在老虎证券平仓 30 股，在富途减持 5 股）。<br>
-  👉 <strong>将释放闲置美元现金 $4,838 USD</strong>，你的组合半导体行业暴露将从 21.4% 直接降至健康的 16.2%。`;
+        if (text.includes('为什么') && text.includes('赚钱')) {
+          reply = `<strong>📊 今日组合净值变动诊断 (+0.74% / +¥18,450)</strong><br><br>
+今日盈利主要来自 <strong>A股核心制造与高ROE资产的强劲对冲</strong>：<br>
+1. <strong>宁德时代 (+7.80%)</strong>：单日大涨贡献了超过 <strong>¥20,628</strong> 浮盈，储能业务放量及技术授权推进打消了关税担忧。<br>
+2. <strong>贵州茅台 (+1.25%)</strong>：批价企稳回升至 2280 元，逆势防守贡献 <strong>+¥6,604</strong>。<br>
+3. <strong>台积电 (+1.49%)</strong>：受 ASML 交付正常提振，海外先进制程满产逻辑完好。<br><br>
+尽管英伟达微跌 -0.59%，但被A股与港股腾讯(+0.94%)完全平抑，体现了多市场配置的避险价值。`;
+        } else if (text.includes('美团') || text.includes('巡检')) {
+          reply = `<strong>🎯 美团-W (03690.HK) 地毯式巡检与止盈建议</strong><br><br>
+• <strong>实时状态</strong>：现价 71.65 港元，今日微涨 +0.49%，长桥账户持有 2,500 股，累计浮盈 <strong>+22.5%</strong>。<br>
+• <strong>传导链条分析</strong>：抖音生活服务战略转向变现率，行业价格战降温利好中线 OPM。<br>
+• <strong>决策建议</strong>：当前股价已进入第一止盈区间（72 港元警戒线）。<strong>建议卖出 800 股锁定利润</strong>，剩余 1,700 股设置 68 港元移动保本止盈线。`;
         } else {
-          reply = `<strong>💡 基于 4 券商持仓的投研分析：</strong><br><br>
-你当前组合的总资产为 <strong>¥2,418,500</strong>，拥有 16.2%（¥39.1万）的高流动性现金储备。针对你提出的：“<em>${text}</em>”：<br><br>
-系统检测到你当前面临的最关键风险因子是 <strong>美股高Beta半导体与港股互联网的同向估值波动</strong>。建议继续执行“茅台高分红防守 + 逢高减持部分美团锁定收益 + 保留充足现金在A/H超跌时右侧加仓”的既定策略。`;
+          reply = `<strong>💡 基于 4 券商持仓与实时行情的投研诊断：</strong><br><br>
+你当前查看的档案为 <strong>${currentDate}</strong>，组合实时总资产为 <strong>¥2,494,481</strong>。你所关注的问题：“<em>${text}</em>”已纳入风控上下文。当前组合的半导体行业总暴露为 <strong>21.4%</strong>（处于预警边缘），建议保持防守纪律，优先保护既有浮盈。`;
         }
-
         appendChatMessage('assistant', reply);
-      }, 600);
+      }, 500);
     }
 
     function appendChatMessage(sender, htmlContent) {
       const container = document.getElementById('chat-messages');
       const isUser = sender === 'user';
-
       const row = document.createElement('div');
       row.className = `flex items-start space-x-3 ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`;
-
       const avatar = isUser ?
         `<div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white shrink-0 mt-0.5"><i data-lucide="user" class="w-4 h-4"></i></div>` :
         `<div class="w-7 h-7 rounded-lg bg-sky-600 flex items-center justify-center text-white shrink-0 mt-0.5"><i data-lucide="bot" class="w-4 h-4"></i></div>`;
-
-      const bubble = `
-        <div class="${isUser ? 'bg-sky-600 text-white' : 'bg-slate-950 border border-slate-800 text-slate-200'} rounded-2xl p-3.5 max-w-2xl leading-relaxed">
-          ${htmlContent}
-        </div>
-      `;
-
+      const bubble = `<div class="${isUser ? 'bg-sky-600 text-white' : 'bg-slate-950 border border-slate-800 text-slate-200'} rounded-2xl p-3.5 max-w-2xl leading-relaxed">${htmlContent}</div>`;
       row.innerHTML = avatar + bubble;
       container.appendChild(row);
       container.scrollTop = container.scrollHeight;
@@ -1717,37 +1634,23 @@
       document.getElementById('chat-messages').innerHTML = '';
     }
 
-    // New Trade Modal
-    function openNewTradeModal() {
-      document.getElementById('new-trade-modal').classList.remove('hidden');
-    }
-
-    function closeNewTradeModal() {
-      document.getElementById('new-trade-modal').classList.add('hidden');
-    }
-
-    function saveNewTrade() {
-      const symbol = document.getElementById('nt-symbol').value;
-      const broker = document.getElementById('nt-broker').value;
-      const reason = document.getElementById('nt-reason').value;
-      const stop = document.getElementById('nt-stop').value;
-
-      if (!symbol || !reason) {
-        alert('请至少填写标的名称与买入理由！');
-        return;
+    // Render Master Views
+    function renderAllViews() {
+      if (dayData && dayData.brief) {
+        document.getElementById('brief-one-liner').innerText = dayData.brief.headline;
+        document.getElementById('brief-detailed').innerText = dayData.brief.narrative;
+        document.getElementById('brief-date-tag').innerText = `${dayData.meta.date} 档案`;
+        document.getElementById('kpi-nav').innerText = `¥ ${dayData.brief.total_nav_cny.toLocaleString()}`;
+        document.getElementById('header-nav-val').innerText = `¥ ${dayData.brief.total_nav_cny.toLocaleString()}`;
+        const pnlSign = dayData.brief.today_pnl_pct >= 0 ? '+' : '';
+        const pnlColor = dayData.brief.today_pnl_pct >= 0 ? 'text-emerald-400' : 'text-rose-400';
+        document.getElementById('kpi-pnl-pct').innerText = `${pnlSign}${dayData.brief.today_pnl_pct.toFixed(2)}%`;
+        document.getElementById('kpi-pnl-cny').innerText = `${pnlSign}¥ ${Math.abs(dayData.brief.today_pnl_cny).toLocaleString()}`;
+        document.getElementById('kpi-pnl-cny').className = `text-xl font-bold font-mono ${pnlColor}`;
       }
 
-      alert(`✅ 决策已归档至投资日志！标的: ${symbol}，账户: ${broker}。系统已为您自动绑定 AI 逻辑巡检。`);
-      closeNewTradeModal();
-    }
-
-    function refreshData() {
-      loadData();
-    }
-
-    // Master Render Trigger
-    function renderAll() {
-      renderTimeline();
+      renderHoldingsChecklist();
+      renderTransmissionChains();
       renderPortfolioTable();
       renderIntelList();
       renderRiskCenter();
@@ -1755,9 +1658,8 @@
       if (window.lucide) lucide.createIcons();
     }
 
-    // Auto-init
     window.addEventListener('DOMContentLoaded', () => {
-      loadData();
+      initCatalogAndDate();
     });
   </script>
 </body>
